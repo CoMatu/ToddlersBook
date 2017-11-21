@@ -1,10 +1,6 @@
-package ru.yandex.matu1.toddlersbook;
+package ru.yandex.matu1.toddlersbook.models;
 
 import android.net.Uri;
-
-/**
- * Created by matu1 on 28.10.17.
- */
 
 public class Cover {
     Uri fileBookCover;

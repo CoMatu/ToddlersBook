@@ -14,6 +14,8 @@ import org.json.JSONTokener;
 import java.util.ArrayList;
 import java.util.List;
 
+import ru.yandex.matu1.toddlersbook.models.Cover;
+
 public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;

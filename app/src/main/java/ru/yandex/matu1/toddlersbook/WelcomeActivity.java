@@ -101,25 +101,16 @@ public class WelcomeActivity extends AppCompatActivity {
                 urlsFromServer = GetListUrlCovers(resultJsonServer);
 
             } else {
-
                 CheckListFile(fileNamePath);
-
                 if (!CheckFileStorage) {
-
                     Toast toast = Toast.makeText(getApplicationContext(),
-
                             getString(R.string.NoInternetText), Toast.LENGTH_LONG);
-
                     toast.show();
-
                     NextActivity();
 
                 } else {
-
                     NextActivity();
-
                 }
-
             }
 
             CheckListFile(fileNamePath);
@@ -127,7 +118,6 @@ public class WelcomeActivity extends AppCompatActivity {
             if (CheckFileStorage) {
 
                 String jsResult = MyJSON.getData(getApplicationContext(), fileNamePath);
-
                 filesPath = getFilesPathFromFile(jsResult);
 
             } else {
