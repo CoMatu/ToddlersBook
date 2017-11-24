@@ -14,25 +14,25 @@ public class BookFiles {
 
     @SerializedName("pagesPath")
     @Expose
-    private ArrayList<Uri> pagesPath = null;
+    private ArrayList<String> pagesPath = null;
     @SerializedName("soundsPath")
     @Expose
-    private ArrayList<Uri> soundsPath = null;
+    private ArrayList<String> soundsPath = null;
 
 
-    public ArrayList<Uri> getPagesPath() {
+    public ArrayList<String> getPagesPath() {
         return pagesPath;
     }
 
-    public void setPagesPath(ArrayList<Uri> pagesPath) {
+    public void setPagesPath(ArrayList<String> pagesPath) {
         this.pagesPath = pagesPath;
     }
 
-    public ArrayList<Uri> getSoundsPath() {
+    public ArrayList<String> getSoundsPath() {
         return soundsPath;
     }
 
-    public void setSoundsPath(ArrayList<Uri> soundsPath) {
+    public void setSoundsPath(ArrayList<String> soundsPath) {
         this.soundsPath = soundsPath;
     }
 

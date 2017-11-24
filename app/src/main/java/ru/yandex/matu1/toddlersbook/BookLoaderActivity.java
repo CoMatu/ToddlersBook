@@ -1,20 +1,15 @@
 package ru.yandex.matu1.toddlersbook;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.google.gson.Gson;
-import com.thin.downloadmanager.DownloadRequest;
-import com.thin.downloadmanager.ThinDownloadManager;
 import com.tonyodev.fetch.Fetch;
-import com.tonyodev.fetch.listener.FetchListener;
 import com.tonyodev.fetch.request.Request;
 
 import java.io.BufferedReader;
@@ -49,17 +44,26 @@ public class BookLoaderActivity extends AppCompatActivity {
         BookUriFromId();
 
         fileBookStorage = "book_"+bookId+".json";
+/*
         CheckBookFile(fileBookStorage);
         if(CheckBookStorage){
             NextActivity();
         }
+*/
+        File fileOfBook = new File(getApplicationContext().getFilesDir().getPath() + "/" + fileBookStorage);
+
+        if (fileOfBook.exists()) {
+        NextActivity();
+        }
+
         BookLoader bookLoader = new BookLoader();
         bookLoader.execute();
         ArrayList<String> pagesPath;
         ArrayList<String> soundsPath;
         pagesPath = new ArrayList<>();
         soundsPath = new ArrayList<>();
-        List<Request> requestList = new ArrayList<>();
+        List<Request> requestListPages = new ArrayList<>();
+        List<Request> requestListSounds = new ArrayList<>();
         String folderB = "bookfiles_"+bookId;
 
         File bookfolder = new File(String.valueOf(getExternalFilesDir(folderB)));
@@ -85,27 +89,36 @@ public class BookLoaderActivity extends AppCompatActivity {
 //            String pagesUrl = String.valueOf(pages);
 
             for(int i=0; i<pages.size(); i++){
-                int nmb = i+1;
                 String url = pages.get(i);
                 String path = String.valueOf(bookfolder);
                 String fileName = Uri.parse(url).getLastPathSegment();
             Log.d("my2", fileName);
                 Request request = new Request(url, path, fileName);
-                requestList.add(request);
+                requestListPages.add(request);
                 String pageFilePath = path+"/"+fileName;
                 Log.d("my2", pageFilePath);
-
                 pagesPath.add(pageFilePath);
             }
-            List<Long> idsPages = mFetch.enqueue(requestList);
+            List<Long> idsPages = mFetch.enqueue(requestListPages);
 
             //            Log.d(TAG, String.valueOf(pages));
             List<String> sounds = book.getSoundUrl();
 //            String soundsUrl = String.valueOf(sounds);
 
             for(int i=0; i<sounds.size(); i++){
-
+                String urlS = sounds.get(i);
+                String path = String.valueOf(bookfolder);
+                String fileNameS = Uri.parse(urlS).getLastPathSegment();
+                Log.d("my2", fileNameS);
+                Request requestS = new Request(urlS, path, fileNameS);
+                requestListSounds.add(requestS);
+                String soundFilePath = path+"/"+fileNameS;
+                Log.d("my2", soundFilePath);
+                soundsPath.add(soundFilePath);
             }
+
+            List<Long> idsSound = mFetch.enqueue(requestListSounds);
+
             BookFiles bookFiles = new BookFiles();
             bookFiles.setBookID(bookId);
             bookFiles.setPagesPath(pagesPath);
@@ -119,7 +132,6 @@ public class BookLoaderActivity extends AppCompatActivity {
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
-
         NextActivity();
     }
 
