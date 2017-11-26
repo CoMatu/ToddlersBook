@@ -17,7 +17,7 @@ import ru.yandex.matu1.toddlersbook.models.Cover;
 
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ImageViewHolder> {
 
-    private static final String LOG_TAG = "my_log";
+//    private static final String LOG_TAG = "my_log";
 
     private List<Cover> covers;
 
@@ -40,17 +40,13 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ImageV
     @Override
     public void onBindViewHolder(final ImageViewHolder holder, final int position) {
         Cover cover = covers.get(position);
-//        String filePath = String.valueOf(cover.getFileBookCover());
-//        Log.d(LOG_TAG, "Cover URI URI: " + filePath);
         Uri uri = cover.getFileBookCover();
         holder.bind(uri);
 
         holder.imgObl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Toast.makeText(holder.imgObl.getContext(),
-//                "Пойдем читать ", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(holder.imgObl.getContext(), BookLoaderActivity.class);
+                Intent intent = new Intent(holder.imgObl.getContext(), BookCardActivity.class);
                 intent.putExtra("bookId", position+1); // передаю в слайдер номер книги
                 holder.imgObl.getContext().startActivity(intent);
             }

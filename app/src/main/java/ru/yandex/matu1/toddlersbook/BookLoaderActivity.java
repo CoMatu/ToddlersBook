@@ -9,13 +9,16 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.tonyodev.fetch.Fetch;
+import com.tonyodev.fetch.listener.FetchListener;
 import com.tonyodev.fetch.request.Request;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -26,113 +29,77 @@ import ru.yandex.matu1.toddlersbook.models.Book;
 import ru.yandex.matu1.toddlersbook.models.BookFiles;
 
 public class BookLoaderActivity extends AppCompatActivity {
-
     static final String TAG = "myLogs";
     private int bookId;
-    boolean CheckBookStorage = false;
-    String fileBookStorage;
-
-    Fetch mFetch;
 
     // "http://human-factors.ru/todbook/book1.json";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Type itemsListType = new TypeToken<List<String>>() {}.getType();
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_loader);
-
         BookUriFromId();
 
-        fileBookStorage = "book_"+bookId+".json";
-/*
-        CheckBookFile(fileBookStorage);
-        if(CheckBookStorage){
-            NextActivity();
-        }
-*/
-        File fileOfBook = new File(getApplicationContext().getFilesDir().getPath() + "/" + fileBookStorage);
+        String folderB = "bookfiles_" + bookId;
+
+        String fileBookStorage = "book_" + bookId + ".json";
+        File fileOfBook = new File(this.getFilesDir().getPath() + File.separator + fileBookStorage);
 
         if (fileOfBook.exists()) {
-        NextActivity();
-        }
+            NextActivity();
+        } else {
 
-        BookLoader bookLoader = new BookLoader();
-        bookLoader.execute();
-        ArrayList<String> pagesPath;
-        ArrayList<String> soundsPath;
-        pagesPath = new ArrayList<>();
-        soundsPath = new ArrayList<>();
-        List<Request> requestListPages = new ArrayList<>();
-        List<Request> requestListSounds = new ArrayList<>();
-        String folderB = "bookfiles_"+bookId;
+            BookLoader bookLoader = new BookLoader();
+            bookLoader.execute();
 
-        File bookfolder = new File(String.valueOf(getExternalFilesDir(folderB)));
-        Log.d("my2", String.valueOf(bookfolder));
+            ArrayList<String> pagesPath;
+            ArrayList<String> soundsPath;
+//            pagesPath = new ArrayList<>();
+            soundsPath = new ArrayList<>();
 
-        if(!bookfolder.exists()){
-            bookfolder.mkdirs();
-            Log.d("my", "dir. created");
+            File bookfolder = new File(String.valueOf(getExternalFilesDir(folderB)));
+//            Log.d("my2", String.valueOf(bookfolder));
+
+            if (!bookfolder.exists()) {
+                bookfolder.mkdirs();
+                Log.d("my", "dir. created");
             }
+/*
             else {
-            Log.d("my", "dir. already exists");
-        }
-
-        try {
-            String result = bookLoader.get();
-            Gson gson = new Gson();
-            Book book = gson.fromJson(result, Book.class);
-//            Log.d(TAG, result);
-            List<String> pages = book.getPageUrl();
-            mFetch = Fetch.newInstance(this);
-            mFetch.removeRequests(); //чистим базу запросов
-
-//            String pagesUrl = String.valueOf(pages);
-
-            for(int i=0; i<pages.size(); i++){
-                String url = pages.get(i);
-                String path = String.valueOf(bookfolder);
-                String fileName = Uri.parse(url).getLastPathSegment();
-            Log.d("my2", fileName);
-                Request request = new Request(url, path, fileName);
-                requestListPages.add(request);
-                String pageFilePath = path+"/"+fileName;
-                Log.d("my2", pageFilePath);
-                pagesPath.add(pageFilePath);
+                Log.d("my", "dir. already exists");
             }
-            List<Long> idsPages = mFetch.enqueue(requestListPages);
+*/
 
-            //            Log.d(TAG, String.valueOf(pages));
-            List<String> sounds = book.getSoundUrl();
-//            String soundsUrl = String.valueOf(sounds);
+            try {
+                String result = bookLoader.get();
+                Gson gson = new Gson();
+                Book book = gson.fromJson(result, Book.class);
+                List<String> pages = book.getPageUrl();
+                String[] urlsPages = pages.toArray(new String[0]);
 
-            for(int i=0; i<sounds.size(); i++){
-                String urlS = sounds.get(i);
-                String path = String.valueOf(bookfolder);
-                String fileNameS = Uri.parse(urlS).getLastPathSegment();
-                Log.d("my2", fileNameS);
-                Request requestS = new Request(urlS, path, fileNameS);
-                requestListSounds.add(requestS);
-                String soundFilePath = path+"/"+fileNameS;
-                Log.d("my2", soundFilePath);
-                soundsPath.add(soundFilePath);
+                FileLoader fileLoader = new FileLoader();
+                fileLoader.execute(urlsPages);
+                String flResult = fileLoader.get();
+
+                pagesPath = new Gson().fromJson(flResult, itemsListType);
+
+                BookFiles bookFiles = new BookFiles();
+                bookFiles.setBookID(bookId);
+                bookFiles.setPagesPath(pagesPath);
+                bookFiles.setSoundsPath(soundsPath);
+
+                Gson gson11 = new Gson();
+                String filesJson = gson11.toJson(bookFiles);
+
+                MyJSON.saveData(this, filesJson, fileBookStorage);
+
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
             }
-
-            List<Long> idsSound = mFetch.enqueue(requestListSounds);
-
-            BookFiles bookFiles = new BookFiles();
-            bookFiles.setBookID(bookId);
-            bookFiles.setPagesPath(pagesPath);
-            bookFiles.setSoundsPath(soundsPath);
-
-            Gson gson11 = new Gson();
-            String filesJson = gson11.toJson(bookFiles);
-
-            MyJSON.saveData(this, filesJson, fileBookStorage);
-
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
+            NextActivity();
         }
-        NextActivity();
     }
 
     private class BookLoader extends AsyncTask<Void, Void, String>{
@@ -169,6 +136,46 @@ public class BookLoaderActivity extends AppCompatActivity {
             return resultJsonBook;
         }
 
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+    }
+
+    private class FileLoader extends AsyncTask<String, Void, String>{
+        Fetch mFetch;
+        String folderB = "bookfiles_" + bookId;
+        File bookfolder = new File(String.valueOf(getExternalFilesDir(folderB)));
+        List<Request> requestListPages = new ArrayList<>();
+        ArrayList<String> pagesPath = new ArrayList<>();
+        String resultD;
+
+        @Override
+        protected String doInBackground(String... urlsFiles) {
+
+            mFetch = Fetch.newInstance(getApplicationContext());
+            mFetch.removeRequests(); //чистим базу запросов
+
+            for(int i=0; i<urlsFiles.length; i++){
+                String url = urlsFiles[i];
+                String path = String.valueOf(bookfolder);
+                String fileName = Uri.parse(url).getLastPathSegment();
+                Log.d("my2", fileName);
+                Request request = new Request(url, path, fileName);
+                requestListPages.add(request);
+                String pageFilePath = path + "/" + fileName;
+                Log.d("my2", pageFilePath);
+                pagesPath.add(pageFilePath);
+            }
+
+            mFetch.enqueue(requestListPages);
+//            resultD = String.valueOf(pagesPath);
+            String resultD = new Gson().toJson(pagesPath);
+            return resultD;
+
+        }
+
     }
 
     private void BookUriFromId(){
@@ -178,33 +185,17 @@ public class BookLoaderActivity extends AppCompatActivity {
         Log.d(TAG, "You read book №" + bookId);
     }
 
-    private void CheckBookFile(String fileBookStorage) {
-        File fileOfBook = new File(getApplicationContext().getFilesDir().getPath() + "/" + fileBookStorage);
-
-        if (fileOfBook.exists()) {
-
-            CheckBookStorage = true;
-
-        }
-
-    }
-
     private void NextActivity() {
 
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 Intent intent = new Intent(BookLoaderActivity.this, SliderActivity.class);
+                intent.putExtra("bookId", bookId); // передаю в слайдер номер книги
+
                 startActivity(intent);
                 finish();
             }
         }, 20);
     }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mFetch.release();
-    }
-
 }

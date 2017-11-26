@@ -1,15 +1,11 @@
 package ru.yandex.matu1.toddlersbook;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -23,11 +19,8 @@ import org.json.JSONTokener;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.ObjectOutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -132,8 +125,6 @@ public class WelcomeActivity extends AppCompatActivity {
                 }
                 String strJs = new Gson().toJson(filesPath);
                 MyJSON.saveData(getApplicationContext(), strJs, fileNamePath);
-
-
             }
 
             if (filesPath.size() == urlsFromServer.size()) {
@@ -141,29 +132,21 @@ public class WelcomeActivity extends AppCompatActivity {
                 NextActivity();
 
             } else {
-
                 try {
                     deleteFile(fileNamePath);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
-//                filesPath = new ArrayList<>();
-
                 for (int i = 0; i < urlsFromServer.size(); i++) {
-
                     int d = i + 1;
                     String fileUrl = urlsFromServer.get(i);
                     String filenam = getApplicationContext().getFilesDir() + File.separator + "bookcover_" + d + ".jpg";
                     FileLoader(fileUrl, filenam);
                 }
-
                 String strJs = new Gson().toJson(filesPath);
                 MyJSON.saveData(getApplicationContext(), strJs, fileNamePath);
                 NextActivity();
-
             }
-
         }
 
     }

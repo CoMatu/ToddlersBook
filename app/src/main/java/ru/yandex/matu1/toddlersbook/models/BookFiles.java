@@ -19,7 +19,6 @@ public class BookFiles {
     @Expose
     private ArrayList<String> soundsPath = null;
 
-
     public ArrayList<String> getPagesPath() {
         return pagesPath;
     }
