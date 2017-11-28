@@ -1,5 +1,6 @@
 package ru.yandex.matu1.toddlersbook;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -33,6 +34,9 @@ import java.io.StreamCorruptedException;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -63,67 +67,57 @@ public class BookCardActivity extends AppCompatActivity {
 
         Button buttonDownload = (Button) findViewById(R.id.button);
         Button buttonRead = (Button) findViewById(R.id.button2);
-        String fileBookSt = "book_" + bookId + ".json";
-        String fileListBook = "list_"+"book"+bookId+".json";
 
-        BookLoader(bookId);
+        String fileListBook = "list_" + "book_" + bookId + ".json";
 
-//        final String jsBook = GetJson(fileListBook);
+//        File f = new File(getApplicationContext().getFilesDir().getPath() + "/" + fileListBook);
+        String filePath = getApplicationContext().getFilesDir().getPath() + "/" + fileListBook;
 
-        File fileOfBook = new File(getApplicationContext().getFilesDir().getPath() + File.separator + fileBookSt);
+        /**
+         * Загрузим json с url файлов книги
+         */
 
-        if (fileOfBook.exists()) {
-            buttonDownload.setEnabled(false);
+        Thread jsDownload = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                BookLoader();
+            }
+        });
+        jsDownload.start(); // запустили поток 1
+
+        try {
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
+        /**
+         * Обрабатываем нажатие кнопки "Загрузить" и грузим файлы книги
+         */
 
         buttonDownload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Type itemsListType = new TypeToken<List<String>>() {
-                }.getType();
-                String folderB = "bookfiles_" + bookId;
-                String fileBookStorage = "book_" + bookId + ".json";
-
-                ArrayList<String> pagesPath;
-                ArrayList<String> soundsPath;
-                soundsPath = new ArrayList<>();
-
-
-                File bookfolder = new File(String.valueOf(getExternalFilesDir(folderB)));
-
-                if (!bookfolder.exists()) {
-                    bookfolder.mkdirs();
-                    Log.d("my", "dir. created");
-                }
-
-                try {
-                    Gson gson = new Gson();
-                    Book book = gson.fromJson(jsBook, Book.class);
-                    List<String> pages = book.getPageUrl();
-                    String[] urlsPages = pages.toArray(new String[0]);
-
-                    FileLoader fileLoader = new FileLoader();
-                    fileLoader.execute(urlsPages);
-                    String flResult = fileLoader.get();
-
-                    pagesPath = new Gson().fromJson(flResult, itemsListType);
-
-                    BookFiles bookFiles = new BookFiles();
-                    bookFiles.setBookID(bookId);
-                    bookFiles.setPagesPath(pagesPath);
-                    bookFiles.setSoundsPath(soundsPath);
-
-                    Gson gson11 = new Gson();
-                    String filesJson = gson11.toJson(bookFiles);
-
-                    MyJSON.saveData(getApplicationContext(), filesJson, fileBookStorage);
-
-                } catch (InterruptedException | ExecutionException e) {
-                    e.printStackTrace();
-                }
-//                }
+                Thread mThread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String fileListB = "list_" + "book_" + bookId + ".json";
+                        String jsReadFile = MyJSON.getData(getApplicationContext(), fileListB);
+                        Log.d(TAG, jsReadFile);
+                        Gson gson = new Gson();
+                        Book book = gson.fromJson(jsReadFile, Book.class);
+                        List<String> pages = book.getPageUrl();
+                        String[] urlsPages = pages.toArray(new String[0]);
+                        DownloadFilesBook(urlsPages);
+                    }
+                });
+                mThread.start(); // запустили поток 2
             }
         });
+
+        /**
+         * Обрабатываем нажатие кнопки "Читать"
+         */
         buttonRead.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -132,6 +126,7 @@ public class BookCardActivity extends AppCompatActivity {
         });
 
     }
+
     private void BookUriFromId() {
         //получаем номер ID книги, с обложки которой перешли в слайдер
         Intent intent = getIntent();
@@ -167,18 +162,69 @@ public class BookCardActivity extends AppCompatActivity {
         return urisImg;
     }
 
-    private void BookLoader(int bookId) {
-        String bookIdJson = "http://human-factors.ru/todbook/book" + bookId + ".json";
-        Fetch bFetch;
-        String folderJsB = getApplicationContext().getFilesDir().getPath();
-        String fileName = "list_"+Uri.parse(bookIdJson).getLastPathSegment();
-        Request request = new Request(bookIdJson, folderJsB, fileName);
-        bFetch = Fetch.newInstance(getApplicationContext());
-        bFetch.removeRequests();
-        long resD = bFetch.enqueue(request);
-        resD = 0;
+    private void BookLoader() {
+
+        HttpURLConnection urlConnection = null;
+        BufferedReader reader = null;
+        String resultJsonServer = "";
+        String fileBook = "list_" + "book_" + bookId + ".json";
+
+        try {
+            String jsUrl = "http://human-factors.ru/todbook/book" + bookId + ".json";
+            URL url = new URL(jsUrl);
+            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setRequestMethod("GET");
+            urlConnection.connect();
+            InputStream inputStream = urlConnection.getInputStream();
+            StringBuffer buffer = new StringBuffer();
+            reader = new BufferedReader(new InputStreamReader(inputStream));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                buffer.append(line);
+            }
+            resultJsonServer = buffer.toString();
+            MyJSON.saveData(getApplicationContext(), resultJsonServer, fileBook);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
+    private void DownloadFilesBook(String[] urlsFiles) {
+        Fetch mFetch;
+        String folderB = "bookfiles_" + bookId;
+        String fileNameForWrite = "book_" + bookId + ".json";
+
+        File bookfolder = new File(String.valueOf(getExternalFilesDir(folderB)));
+        List<Request> requestListPages = new ArrayList<>();
+        ArrayList<String> pagesPath = new ArrayList<>();
+        String resultD;
+        mFetch = Fetch.newInstance(getApplicationContext());
+        mFetch.removeRequests(); //чистим базу запросов
+
+        for (int i = 0; i < urlsFiles.length; i++) {
+            String url = urlsFiles[i];
+            String path = String.valueOf(bookfolder);
+            String fileName = Uri.parse(url).getLastPathSegment();
+            Log.d("my2", fileName);
+            Request request = new Request(url, path, fileName);
+            requestListPages.add(request);
+            String pageFilePath = path + "/" + fileName;
+            Log.d("my2", pageFilePath);
+            pagesPath.add(pageFilePath);
+        }
+        mFetch.enqueue(requestListPages);
+
+        BookFiles bookFiles = new BookFiles();
+        bookFiles.setBookID(bookId);
+        bookFiles.setPagesPath(pagesPath);
+//      bookFiles.setSoundsPath(soundsPath);
+        Gson gson11 = new Gson();
+        String filesJson = gson11.toJson(bookFiles);
+
+        MyJSON.saveData(getApplicationContext(), filesJson, fileNameForWrite);
+    }
+
+/*
     private class FileLoader extends AsyncTask<String, Void, String> {
         Fetch mFetch;
         String folderB = "bookfiles_" + bookId;
@@ -193,7 +239,7 @@ public class BookCardActivity extends AppCompatActivity {
             mFetch = Fetch.newInstance(getApplicationContext());
             mFetch.removeRequests(); //чистим базу запросов
 
-            for(int i = 0; i < urlsFiles.length; i++) {
+            for (int i = 0; i < urlsFiles.length; i++) {
                 String url = urlsFiles[i];
                 String path = String.valueOf(bookfolder);
                 String fileName = Uri.parse(url).getLastPathSegment();
@@ -217,7 +263,7 @@ public class BookCardActivity extends AppCompatActivity {
         try {
             File f = new File(getApplicationContext().getFilesDir().getPath() + "/" + fileListBook);
             //check whether file exists
-            if(!f.exists()){
+            if (!f.exists()) {
                 return null;
             }
             FileInputStream is = new FileInputStream(f);
@@ -232,5 +278,17 @@ public class BookCardActivity extends AppCompatActivity {
             return null;
         }
     }
+
+    public static String getStringFromFile(String filePath) throws Exception {
+        String jString;
+        File yourFile = new File(filePath);
+        FileInputStream stream = new FileInputStream(yourFile);
+        FileChannel fc = stream.getChannel();
+        MappedByteBuffer bb = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
+        jString = Charset.defaultCharset().decode(bb).toString();
+        stream.close();
+        return jString;
+    }
+*/
 
 }
