@@ -68,7 +68,7 @@ public class BookCardActivity extends AppCompatActivity {
 
         BookLoader(bookId);
 
-        final String jsBook = GetJson(fileListBook);
+//        final String jsBook = GetJson(fileListBook);
 
         File fileOfBook = new File(getApplicationContext().getFilesDir().getPath() + File.separator + fileBookSt);
 
