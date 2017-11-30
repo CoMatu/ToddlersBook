@@ -1,6 +1,7 @@
 package ru.yandex.matu1.toddlersbook;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +10,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +21,7 @@ public class SliderActivity extends AppCompatActivity {
     static final String TAG = "myLogs";
     ViewPager viewPager;
     CustomSwipeAdapter adapter;
+    mSoundTrack soundTrack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +35,8 @@ public class SliderActivity extends AppCompatActivity {
         String fileName = "book_" + bookId + ".json";
         String gsResult = MyJSON.getData(getApplicationContext(), fileName);
         BookFiles bookFiles = gson.fromJson(gsResult, BookFiles.class);
+
+        String folderB = "bookfiles_" + bookId;
         /*
         Получаем из объекта bookFiles массивы путей к файлам книги
          */
@@ -39,8 +44,9 @@ public class SliderActivity extends AppCompatActivity {
         ArrayList<String> soundsFiles = bookFiles.getSoundsPath();
 
         viewPager = (ViewPager)findViewById(R.id.view_pager);
-        adapter = new CustomSwipeAdapter(this, pagesFiles, soundsFiles);
+        adapter = new CustomSwipeAdapter(this, pagesFiles, soundsFiles, folderB);
         viewPager.setAdapter(adapter);
+
 
         //слушаем номер слайда при перелистывании
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -53,7 +59,7 @@ public class SliderActivity extends AppCompatActivity {
             public void onPageSelected(int position) {
                 int page_number = position+1;
                 Log.d(TAG, "onPageSelected, position = " + page_number);
-
+//                soundTrack = new mSoundTrack(getApplicationContext(), );
             }
 
             @Override
@@ -61,21 +67,6 @@ public class SliderActivity extends AppCompatActivity {
 
             }
         });
-/*
-
-        //получаем номер ID книги, с обложки которой перешли в слайдер
-        Intent intent = getIntent();
-        bookId = intent.getIntExtra("bookId", 1);
-        Log.d(TAG, "You read book №" + bookId);
-*/
-    }
-
-    public void GetBookFiles(){
-        Gson gson = new Gson();
-        int bookId = GetBookId();
-        String fileName = "book_" + bookId + ".json";
-        String gsResult = MyJSON.getData(getApplicationContext(), fileName);
-        BookFiles bookFiles = gson.fromJson(gsResult, BookFiles.class);
     }
 
     public int GetBookId(){

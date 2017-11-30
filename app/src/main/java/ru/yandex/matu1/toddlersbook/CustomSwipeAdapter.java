@@ -28,39 +28,19 @@ import ru.yandex.matu1.toddlersbook.models.Cover;
 
 public class CustomSwipeAdapter extends PagerAdapter {
 
-/*
-    private int[] image_resourses = {
-            R.drawable.cat1, R.drawable.cat2, R.drawable.cat3,
-            R.drawable.cat4, R.drawable.cat5, R.drawable.cat6,
-            R.drawable.cat7};
-*/
     private Context ctx;
     ArrayList<String> pagesFiles;
     ArrayList<String> soundsFiles;
-    /*
-    CustomSwipeAdapter(Context ctx){
-        this.ctx = ctx;
-    }
-    */
+    String folderB;
 
-    public CustomSwipeAdapter(Context ctx, ArrayList<String> pagesFiles, ArrayList<String> soundsFiles) {
+    public CustomSwipeAdapter(Context ctx, ArrayList<String> pagesFiles, ArrayList<String> soundsFiles, String folderB) {
         this.ctx = ctx;
         this.pagesFiles = pagesFiles;
         this.soundsFiles = soundsFiles;
+        this.folderB = folderB;
     }
 
-    /*
-        CustomSwipeAdapter(List<BookFiles> pagesPath, Context ctx) {
-            this.pagesPath = pagesPath;
-            this.ctx = ctx;
-        }
-    */
     @Override
-/*
-    public int getCount() {
-        return image_resourses.length;
-    }
-*/
     public int getCount() {
         return pagesFiles.size();
     }
@@ -74,22 +54,22 @@ public class CustomSwipeAdapter extends PagerAdapter {
     public Object instantiateItem(ViewGroup container, int position) {
         LayoutInflater layoutInflatter = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         assert layoutInflatter != null;
-        View item_view = layoutInflatter.inflate(R.layout.swipe_layout,container,false);
-        ImageView imageView = (ImageView)item_view.findViewById(R.id.image_view);
-//        String uri = pagesFiles.get(position);
+        View item_view = layoutInflatter.inflate(R.layout.swipe_layout, container, false);
+        ImageView imageView = (ImageView) item_view.findViewById(R.id.image_view);
         File imgFile = new File(pagesFiles.get(position));
-        if(imgFile.exists()){
-/*
-                Picasso
-                        .with(item_view.getContext())
-                        .load(uri)
-                        .into(imageView);
-*/
+        if (imgFile.exists()) {
             Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
             imageView.setImageBitmap(myBitmap);
             container.addView(item_view);
-
         }
+
+//            Uri souF = Uri.parse(soundsFiles.get(position));
+            String soundPath = String.valueOf(ctx.getExternalFilesDir(folderB));
+            String nameS = Uri.parse(soundsFiles.get(position)).getLastPathSegment();
+            Uri souF = Uri.fromFile(new File(soundPath, nameS));
+            mSoundTrack soundTrack = new mSoundTrack(ctx, souF);
+            soundTrack.start();
+
         return item_view;
 
     }
@@ -97,7 +77,7 @@ public class CustomSwipeAdapter extends PagerAdapter {
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
 
-        container.removeView((LinearLayout)object);
+        container.removeView((LinearLayout) object);
     }
 
 
