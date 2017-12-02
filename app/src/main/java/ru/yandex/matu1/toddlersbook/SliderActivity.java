@@ -15,13 +15,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ru.yandex.matu1.toddlersbook.models.BookFiles;
-import ru.yandex.matu1.toddlersbook.models.Cover;
 
 public class SliderActivity extends AppCompatActivity {
     static final String TAG = "myLogs";
     ViewPager viewPager;
     CustomSwipeAdapter adapter;
-    mSoundTrack soundTrack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,9 +55,10 @@ public class SliderActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
-                int page_number = position+1;
-                Log.d(TAG, "onPageSelected, position = " + page_number);
-//                soundTrack = new mSoundTrack(getApplicationContext(), );
+
+//                int page_number = position+1;
+//                Log.d(TAG, "onPageSelected, position = " + page_number);
+
             }
 
             @Override
@@ -67,6 +66,7 @@ public class SliderActivity extends AppCompatActivity {
 
             }
         });
+
     }
 
     public int GetBookId(){

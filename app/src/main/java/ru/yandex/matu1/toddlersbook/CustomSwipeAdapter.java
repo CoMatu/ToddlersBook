@@ -3,6 +3,8 @@ package ru.yandex.matu1.toddlersbook;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
@@ -19,6 +21,7 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,7 +54,9 @@ public class CustomSwipeAdapter extends PagerAdapter {
     }
 
     @Override
-    public Object instantiateItem(ViewGroup container, int position) {
+    public Object instantiateItem(ViewGroup container, final int position) {
+        final String nameS = Uri.parse(soundsFiles.get(position)).getLastPathSegment();
+
         LayoutInflater layoutInflatter = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         assert layoutInflatter != null;
         View item_view = layoutInflatter.inflate(R.layout.swipe_layout, container, false);
@@ -63,12 +68,36 @@ public class CustomSwipeAdapter extends PagerAdapter {
             container.addView(item_view);
         }
 
-//            Uri souF = Uri.parse(soundsFiles.get(position));
-            String soundPath = String.valueOf(ctx.getExternalFilesDir(folderB));
-            String nameS = Uri.parse(soundsFiles.get(position)).getLastPathSegment();
-            Uri souF = Uri.fromFile(new File(soundPath, nameS));
-            mSoundTrack soundTrack = new mSoundTrack(ctx, souF);
-            soundTrack.start();
+        item_view.setOnClickListener(new View.OnClickListener() {
+            MediaPlayer mp = null;
+
+            @Override
+            public void onClick(View v) {
+                if (mp == null) {
+
+                    mp = new MediaPlayer();
+
+                    String soundPath = String.valueOf(ctx.getExternalFilesDir(folderB));
+                    mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                    Uri souF = Uri.fromFile(new File(soundPath, nameS));
+                    try {
+                        mp.setDataSource(ctx, souF);
+                        mp.prepareAsync();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                                                 @Override
+                                                 public void onPrepared(MediaPlayer mp) {
+                                                     mp.start();
+                                                 }
+                                             }
+                    );
+
+                }
+                mp.pause();
+            }
+        });
 
         return item_view;
 
