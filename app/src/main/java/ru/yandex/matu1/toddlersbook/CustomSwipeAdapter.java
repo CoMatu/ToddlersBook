@@ -30,8 +30,7 @@ import ru.yandex.matu1.toddlersbook.models.BookFiles;
 import ru.yandex.matu1.toddlersbook.models.Cover;
 
 public class CustomSwipeAdapter extends PagerAdapter {
-
-    private Context ctx;
+    Context ctx;
     ArrayList<String> pagesFiles;
     ArrayList<String> soundsFiles;
     String folderB;
@@ -54,8 +53,13 @@ public class CustomSwipeAdapter extends PagerAdapter {
     }
 
     @Override
-    public Object instantiateItem(ViewGroup container, final int position) {
-        final String nameS = Uri.parse(soundsFiles.get(position)).getLastPathSegment();
+    public Object instantiateItem(ViewGroup container, int position) {
+
+        String nameS = Uri.parse(soundsFiles.get(position)).getLastPathSegment();
+        final String soundPath = String.valueOf(ctx.getExternalFilesDir(folderB));
+        final Uri souF = Uri.fromFile(new File(soundPath, nameS));
+        final MediaPlayer mp = MediaPlayer.create(ctx, souF);
+        mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
         LayoutInflater layoutInflatter = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         assert layoutInflatter != null;
@@ -67,40 +71,15 @@ public class CustomSwipeAdapter extends PagerAdapter {
             imageView.setImageBitmap(myBitmap);
             container.addView(item_view);
         }
-
         item_view.setOnClickListener(new View.OnClickListener() {
-            MediaPlayer mp = null;
-
             @Override
             public void onClick(View v) {
-                if (mp == null) {
+            mp.start();
 
-                    mp = new MediaPlayer();
-
-                    String soundPath = String.valueOf(ctx.getExternalFilesDir(folderB));
-                    mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                    Uri souF = Uri.fromFile(new File(soundPath, nameS));
-                    try {
-                        mp.setDataSource(ctx, souF);
-                        mp.prepareAsync();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                                                 @Override
-                                                 public void onPrepared(MediaPlayer mp) {
-                                                     mp.start();
-                                                 }
-                                             }
-                    );
-
-                }
-                mp.pause();
-            }
+        }
         });
 
         return item_view;
-
     }
 
     @Override
@@ -109,6 +88,4 @@ public class CustomSwipeAdapter extends PagerAdapter {
         container.removeView((LinearLayout) object);
     }
 
-
 }
-

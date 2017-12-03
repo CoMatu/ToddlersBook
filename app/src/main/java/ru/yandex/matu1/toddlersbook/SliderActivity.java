@@ -7,6 +7,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import com.google.gson.Gson;
 
@@ -20,6 +21,7 @@ public class SliderActivity extends AppCompatActivity {
     static final String TAG = "myLogs";
     ViewPager viewPager;
     CustomSwipeAdapter adapter;
+    MediaPlayer mp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,8 +58,8 @@ public class SliderActivity extends AppCompatActivity {
             @Override
             public void onPageSelected(int position) {
 
-//                int page_number = position+1;
-//                Log.d(TAG, "onPageSelected, position = " + page_number);
+                int page_number = position+1;
+                Log.d(TAG, "onPageSelected, position = " + page_number);
 
             }
 
@@ -75,4 +77,5 @@ public class SliderActivity extends AppCompatActivity {
 //        Log.d(TAG, "You read book №" + bookId);
         return bookId;
     }
+
 }
