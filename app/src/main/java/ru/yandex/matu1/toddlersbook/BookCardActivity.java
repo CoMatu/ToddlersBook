@@ -76,7 +76,7 @@ public class BookCardActivity extends AppCompatActivity {
 
         String fileListBook = "list_" + "book_" + bookId + ".json";
 
-        String filePath = getApplicationContext().getFilesDir().getPath() + "/" + fileListBook;
+//        String filePath = getApplicationContext().getFilesDir().getPath() + "/" + fileListBook;
 
         /**
          * Проверим наличие файлов в папке bookfiles_1, bookfiles_2, ...
@@ -105,11 +105,13 @@ public class BookCardActivity extends AppCompatActivity {
             });
             jsDownload.start(); // запустили поток 1
 
+/*
             try {
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
+*/
 
             /**
              * Обрабатываем нажатие кнопки "Загрузить" и грузим файлы книги
@@ -226,7 +228,7 @@ public class BookCardActivity extends AppCompatActivity {
         File bookfolder = new File(String.valueOf(getExternalFilesDir(folderB)));
         List<Request> requestListPages = new ArrayList<>();
         ArrayList<String> pagesFiles = new ArrayList<>();
-        String resultD;
+//        String resultD;
         mFetch = Fetch.newInstance(getApplicationContext());
 //        mFetch.removeRequests(); //чистим базу запросов
 

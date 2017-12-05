@@ -2,26 +2,23 @@ package ru.yandex.matu1.toddlersbook;
 
 import android.content.Intent;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
+
 
 import com.google.gson.Gson;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
+import ru.yandex.matu1.toddlersbook.animations.ZoomOutPageTransformer;
 import ru.yandex.matu1.toddlersbook.models.BookFiles;
 
 public class SliderActivity extends AppCompatActivity {
     static final String TAG = "myLogs";
     ViewPager viewPager;
     CustomSwipeAdapter adapter;
-    MediaPlayer mp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +40,8 @@ public class SliderActivity extends AppCompatActivity {
         ArrayList<String> pagesFiles = bookFiles.getPagesPath();
         ArrayList<String> soundsFiles = bookFiles.getSoundsPath();
 
-        viewPager = (ViewPager)findViewById(R.id.view_pager);
+        viewPager = (ViewPager) findViewById(R.id.view_pager);
+        viewPager.setPageTransformer(true, new ZoomOutPageTransformer());
         adapter = new CustomSwipeAdapter(this, pagesFiles, soundsFiles, folderB);
         viewPager.setAdapter(adapter);
 
@@ -58,20 +56,29 @@ public class SliderActivity extends AppCompatActivity {
             @Override
             public void onPageSelected(int position) {
 
-                int page_number = position+1;
-                Log.d(TAG, "onPageSelected, position = " + page_number);
 
             }
 
             @Override
             public void onPageScrollStateChanged(int state) {
+                final MediaPlayer mp = MyPlayer.mp;
+                if (ViewPager.SCROLL_STATE_IDLE == state) {
 
+                    if (mp.isPlaying()) {
+                        mp.pause();
+                    }
+                } else {
+
+                    if (mp.isPlaying()) {
+                        mp.pause();
+                    }
+                }
             }
         });
 
     }
 
-    public int GetBookId(){
+    public int GetBookId() {
         Intent intent = getIntent();
         int bookId = intent.getIntExtra("bookId", 1);
 //        Log.d(TAG, "You read book №" + bookId);

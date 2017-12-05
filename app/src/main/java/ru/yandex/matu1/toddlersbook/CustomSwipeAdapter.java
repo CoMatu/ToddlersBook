@@ -35,6 +35,7 @@ public class CustomSwipeAdapter extends PagerAdapter {
     ArrayList<String> soundsFiles;
     String folderB;
 
+
     public CustomSwipeAdapter(Context ctx, ArrayList<String> pagesFiles, ArrayList<String> soundsFiles, String folderB) {
         this.ctx = ctx;
         this.pagesFiles = pagesFiles;
@@ -58,7 +59,8 @@ public class CustomSwipeAdapter extends PagerAdapter {
         String nameS = Uri.parse(soundsFiles.get(position)).getLastPathSegment();
         final String soundPath = String.valueOf(ctx.getExternalFilesDir(folderB));
         final Uri souF = Uri.fromFile(new File(soundPath, nameS));
-        final MediaPlayer mp = MediaPlayer.create(ctx, souF);
+//        final MediaPlayer mp = MediaPlayer.create(ctx, souF);
+        final MediaPlayer mp = MyPlayer.getMp(ctx, souF);
         mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
         LayoutInflater layoutInflatter = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -74,8 +76,11 @@ public class CustomSwipeAdapter extends PagerAdapter {
         item_view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            mp.start();
-
+            if(!mp.isPlaying()) {
+                mp.start();
+            } else {
+                mp.pause();
+            }
         }
         });
 
