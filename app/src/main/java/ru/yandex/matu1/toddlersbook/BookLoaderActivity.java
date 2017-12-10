@@ -1,13 +1,19 @@
 package ru.yandex.matu1.toddlersbook;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.tonyodev.fetch.Fetch;
@@ -31,11 +37,17 @@ import ru.yandex.matu1.toddlersbook.models.BookFiles;
 public class BookLoaderActivity extends AppCompatActivity {
     static final String TAG = "myLogs";
     private int bookId;
+    private FirebaseAnalytics mFirebaseAnalytics;
+
+    private final int MY_PERMISSIONS_REQUEST_CODE = 1;
+
 
     // "http://human-factors.ru/todbook/book1.json";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Obtain the FirebaseAnalytics instance.
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         Type itemsListType = new TypeToken<List<String>>() {}.getType();
 
         super.onCreate(savedInstanceState);
@@ -92,6 +104,12 @@ public class BookLoaderActivity extends AppCompatActivity {
 
                 Gson gson11 = new Gson();
                 String filesJson = gson11.toJson(bookFiles);
+
+                if (checkPermissions()) {
+                    Toast.makeText(BookLoaderActivity.this, "Разрешения уже получены", Toast.LENGTH_SHORT).show();
+                } else {
+                    setPermissions();
+                }
 
                 MyJSON.saveData(this, filesJson, fileBookStorage);
 
@@ -198,4 +216,39 @@ public class BookLoaderActivity extends AppCompatActivity {
             }
         }, 20);
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode != MY_PERMISSIONS_REQUEST_CODE) {
+            return;
+        }
+        boolean isGranted = true;
+        for (int result : grantResults) {
+            if (result != PackageManager.PERMISSION_GRANTED) {
+                isGranted = false;
+                break;
+            }
+        }
+
+        if (isGranted) {
+            Toast.makeText(BookLoaderActivity.this, "Разрешения получены", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "В разрешениях отказано", Toast.LENGTH_LONG).show();
+
+        }
+    }
+
+    private boolean checkPermissions() {
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            return false;
+        }
+        return true;
+    }
+
+    private void setPermissions() {
+        ActivityCompat.requestPermissions(this, new String[]{
+                Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_CODE);
+    }
+
 }

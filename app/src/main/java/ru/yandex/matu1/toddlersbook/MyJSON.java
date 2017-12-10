@@ -1,8 +1,11 @@
 package ru.yandex.matu1.toddlersbook;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 
@@ -15,7 +18,6 @@ import java.util.ArrayList;
 public class MyJSON {
 
     public static String LOG_TAG = "my_log";
-
 
     public static void saveData(Context context, String mJsonResponse, String fileName) {
         try {
@@ -45,6 +47,7 @@ public class MyJSON {
             return null;
         }
     }
+/*
     public static void saveJsData(Context context, ArrayList<Uri> jsFilePath, String fileName) {
         try {
             FileWriter file = new FileWriter(context.getFilesDir().getPath() + "/" + fileName);
@@ -56,5 +59,6 @@ public class MyJSON {
             Log.e("TAG", "Error in Writing: " + e.getLocalizedMessage());
         }
     }
+*/
 
 }

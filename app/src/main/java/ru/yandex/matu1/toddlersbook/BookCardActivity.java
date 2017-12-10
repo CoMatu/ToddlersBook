@@ -17,9 +17,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.tonyodev.fetch.Fetch;
+import com.tonyodev.fetch.listener.FetchListener;
 import com.tonyodev.fetch.request.Request;
 
 import org.json.JSONArray;
@@ -55,8 +57,12 @@ public class BookCardActivity extends AppCompatActivity {
     private int bookId;
     private String fileNamePath = "filesPath.json";
 
+    private FirebaseAnalytics mFirebaseAnalytics;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Obtain the FirebaseAnalytics instance.
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_card);
 
@@ -221,7 +227,7 @@ public class BookCardActivity extends AppCompatActivity {
     }
 
     private void DownloadFilesBook(String[] urlsFiles) {
-        Fetch mFetch;
+        final Fetch mFetch;
         String folderB = "bookfiles_" + bookId;
         String fileNameForWrite = "book_" + bookId + ".json";
 

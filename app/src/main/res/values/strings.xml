@@ -2,5 +2,6 @@
     <string name="app_name">ToddlersBook</string>
     <string name="buttonRead">Читать</string>
     <string name="buttonDownload">Загрузить</string>
+    <string name="percent_progress">%1$d%%</string>
     <string name="NoInternetText">Для первого запуска программы необходим интернет! Выйдите из приложения и попробуйте снова!</string>
 </resources>

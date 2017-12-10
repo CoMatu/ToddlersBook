@@ -1,13 +1,18 @@
 package ru.yandex.matu1.toddlersbook;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
 import com.thin.downloadmanager.DownloadRequest;
 import com.thin.downloadmanager.ThinDownloadManager;
@@ -30,6 +35,8 @@ public class WelcomeActivity extends AppCompatActivity {
     private ArrayList<String> urlsFromServer = new ArrayList<>();
     private ArrayList<Uri> filesPath = new ArrayList<>();
     private boolean CheckFileStorage = false;
+    private final int MY_PERMISSIONS_REQUEST_CODE = 1;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     private String fileNamePath = "filesPath.json";
 
@@ -39,7 +46,8 @@ public class WelcomeActivity extends AppCompatActivity {
     @Override
 
     protected void onCreate(Bundle savedInstanceState) {
-
+        // Obtain the FirebaseAnalytics instance.
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
 
@@ -124,6 +132,13 @@ public class WelcomeActivity extends AppCompatActivity {
                     FileLoader(fileUrl, filenam);
                 }
                 String strJs = new Gson().toJson(filesPath);
+
+                if (checkPermissions()) {
+                    Toast.makeText(WelcomeActivity.this, "Разрешения уже получены", Toast.LENGTH_SHORT).show();
+                } else {
+                    setPermissions();
+                }
+
                 MyJSON.saveData(getApplicationContext(), strJs, fileNamePath);
             }
 
@@ -144,6 +159,13 @@ public class WelcomeActivity extends AppCompatActivity {
                     FileLoader(fileUrl, filenam);
                 }
                 String strJs = new Gson().toJson(filesPath);
+
+                if (checkPermissions()) {
+                    Toast.makeText(WelcomeActivity.this, "Разрешения уже получены", Toast.LENGTH_SHORT).show();
+                } else {
+                    setPermissions();
+                }
+
                 MyJSON.saveData(getApplicationContext(), strJs, fileNamePath);
                 NextActivity();
             }
@@ -184,6 +206,12 @@ public class WelcomeActivity extends AppCompatActivity {
 
     private void FileLoader(String fileUrl, String filename) {
 
+        if (checkPermissions()) {
+            Toast.makeText(WelcomeActivity.this, "Разрешения уже получены", Toast.LENGTH_SHORT).show();
+        } else {
+            setPermissions();
+        }
+
         ThinDownloadManager downloadManager = new ThinDownloadManager(5); //количество потоков загрузки
         Uri downloadUri = Uri.parse(fileUrl);
         Uri destinationUri = Uri.parse(filename);
@@ -218,4 +246,39 @@ public class WelcomeActivity extends AppCompatActivity {
             }
         }, 2000);
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode != MY_PERMISSIONS_REQUEST_CODE) {
+            return;
+        }
+        boolean isGranted = true;
+        for (int result : grantResults) {
+            if (result != PackageManager.PERMISSION_GRANTED) {
+                isGranted = false;
+                break;
+            }
+        }
+
+        if (isGranted) {
+            Toast.makeText(WelcomeActivity.this, "Разрешения получены", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "В разрешениях отказано", Toast.LENGTH_LONG).show();
+
+        }
+    }
+
+    private boolean checkPermissions() {
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            return false;
+        }
+        return true;
+    }
+
+    private void setPermissions() {
+        ActivityCompat.requestPermissions(this, new String[]{
+                Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_CODE);
+    }
+
 }
