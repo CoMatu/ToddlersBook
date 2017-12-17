@@ -61,7 +61,7 @@ public class SliderActivity extends AppCompatActivity {
 
             @Override
             public void onPageScrollStateChanged(int state) {
-                final MediaPlayer mp = MyPlayer.mp;
+/*                final MediaPlayer mp = MyPlayer.mp;
                 if (ViewPager.SCROLL_STATE_IDLE == state) {
 
                     if (mp.isPlaying()) {
@@ -72,7 +72,7 @@ public class SliderActivity extends AppCompatActivity {
                     if (mp.isPlaying()) {
                         mp.pause();
                     }
-                }
+                }*/
             }
         });
 

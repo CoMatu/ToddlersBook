@@ -39,7 +39,9 @@ public class BookLoaderActivity extends AppCompatActivity {
     private int bookId;
     private FirebaseAnalytics mFirebaseAnalytics;
 
+/*
     private final int MY_PERMISSIONS_REQUEST_CODE = 1;
+*/
 
 
     // "http://human-factors.ru/todbook/book1.json";
@@ -105,11 +107,13 @@ public class BookLoaderActivity extends AppCompatActivity {
                 Gson gson11 = new Gson();
                 String filesJson = gson11.toJson(bookFiles);
 
+/*
                 if (checkPermissions()) {
                     Toast.makeText(BookLoaderActivity.this, "Разрешения уже получены", Toast.LENGTH_SHORT).show();
                 } else {
                     setPermissions();
                 }
+*/
 
                 MyJSON.saveData(this, filesJson, fileBookStorage);
 
@@ -217,6 +221,7 @@ public class BookLoaderActivity extends AppCompatActivity {
         }, 20);
     }
 
+/*
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode != MY_PERMISSIONS_REQUEST_CODE) {
@@ -250,5 +255,6 @@ public class BookLoaderActivity extends AppCompatActivity {
         ActivityCompat.requestPermissions(this, new String[]{
                 Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_CODE);
     }
+*/
 
 }

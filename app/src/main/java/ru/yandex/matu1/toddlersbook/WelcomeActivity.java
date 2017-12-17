@@ -133,9 +133,8 @@ public class WelcomeActivity extends AppCompatActivity {
                 }
                 String strJs = new Gson().toJson(filesPath);
 
-                if (checkPermissions()) {
-                    Toast.makeText(WelcomeActivity.this, "Разрешения уже получены", Toast.LENGTH_SHORT).show();
-                } else {
+                if (!checkPermissions()) {
+//                    Toast.makeText(WelcomeActivity.this, "Разрешения уже получены", Toast.LENGTH_SHORT).show();
                     setPermissions();
                 }
 
