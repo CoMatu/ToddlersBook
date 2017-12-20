@@ -6,6 +6,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Window;
+import android.view.WindowManager;
 
 
 import com.google.gson.Gson;
@@ -23,6 +25,10 @@ public class SliderActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_slider);
 /*
  * Читаем json и создаем из него объект книги bookFiles
@@ -56,23 +62,11 @@ public class SliderActivity extends AppCompatActivity {
             @Override
             public void onPageSelected(int position) {
 
-
             }
 
             @Override
             public void onPageScrollStateChanged(int state) {
-/*                final MediaPlayer mp = MyPlayer.mp;
-                if (ViewPager.SCROLL_STATE_IDLE == state) {
 
-                    if (mp.isPlaying()) {
-                        mp.pause();
-                    }
-                } else {
-
-                    if (mp.isPlaying()) {
-                        mp.pause();
-                    }
-                }*/
             }
         });
 
@@ -81,7 +75,6 @@ public class SliderActivity extends AppCompatActivity {
     public int GetBookId() {
         Intent intent = getIntent();
         int bookId = intent.getIntExtra("bookId", 1);
-//        Log.d(TAG, "You read book №" + bookId);
         return bookId;
     }
 

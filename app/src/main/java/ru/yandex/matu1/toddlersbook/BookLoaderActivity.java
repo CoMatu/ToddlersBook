@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.tonyodev.fetch.Fetch;
@@ -37,19 +36,12 @@ import ru.yandex.matu1.toddlersbook.models.BookFiles;
 public class BookLoaderActivity extends AppCompatActivity {
     static final String TAG = "myLogs";
     private int bookId;
-    private FirebaseAnalytics mFirebaseAnalytics;
-
-/*
-    private final int MY_PERMISSIONS_REQUEST_CODE = 1;
-*/
-
 
     // "http://human-factors.ru/todbook/book1.json";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // Obtain the FirebaseAnalytics instance.
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         Type itemsListType = new TypeToken<List<String>>() {}.getType();
 
         super.onCreate(savedInstanceState);

@@ -10,7 +10,7 @@
     <android.support.v7.widget.CardView
         android:id="@+id/card_view"
         android:layout_width="361dp"
-        android:layout_height="285dp"
+        android:layout_height="270dp"
         android:layout_gravity="center"
         android:layout_margin="20dp"
         android:background="@android:color/transparent"
@@ -20,10 +20,9 @@
 
         <ImageView
             android:id="@+id/iv_recycler_item"
-            android:layout_width="307dp"
-            android:layout_height="234dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
+            android:layout_width="295dp"
+            android:layout_height="225dp"
+            android:layout_marginStart="28dp"
             android:layout_marginTop="20dp"
             android:background="@android:color/transparent"
             android:scaleType="centerCrop"
@@ -34,7 +33,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
-            android:scaleType="centerCrop"
+            android:scaleType="fitCenter"
             app:srcCompat="@drawable/frame_mdpi"
             tools:ignore="ContentDescription" />
 

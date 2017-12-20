@@ -59,7 +59,6 @@ public class CustomSwipeAdapter extends PagerAdapter {
         String nameS = Uri.parse(soundsFiles.get(position)).getLastPathSegment();
         final String soundPath = String.valueOf(ctx.getExternalFilesDir(folderB));
         final Uri souF = Uri.fromFile(new File(soundPath, nameS));
-//        final MediaPlayer mp = MediaPlayer.create(ctx, souF);
         final MediaPlayer mp = MyPlayer.getMp(ctx, souF);
         mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
