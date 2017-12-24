@@ -51,7 +51,7 @@ import ru.yandex.matu1.toddlersbook.models.BookFiles;
 public class BookCardActivity extends AppCompatActivity {
     public static final int DIALOG_DOWNLOAD_PROGRESS = 0;
     private ProgressDialog mProgressDialog;
-
+    private long downloadId = -1;
     static final String TAG = "myLogs";
     private int bookId;
     private String fileNamePath = "filesPath.json";
@@ -107,14 +107,6 @@ public class BookCardActivity extends AppCompatActivity {
                 }
             });
             jsDownload.start(); // запустили поток 1
-
-/*
-            try {
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-*/
 
             /**
              * Обрабатываем нажатие кнопки "Загрузить" и грузим файлы книги
@@ -224,15 +216,41 @@ public class BookCardActivity extends AppCompatActivity {
     }
 
     private void DownloadFilesBook(String[] urlsFiles) {
-        final Fetch mFetch;
+        final Fetch mFetch = Fetch.newInstance(this);
         String folderB = "bookfiles_" + bookId;
         String fileNameForWrite = "book_" + bookId + ".json";
+
+        mFetch.addFetchListener(new FetchListener() {
+            @Override
+            public void onUpdate(long id, int status, int progress, long downloadedBytes, long fileSize, int error) {
+
+                if(id == downloadId) {
+
+                    switch (status) {
+
+                        case Fetch.STATUS_DOWNLOADING: {
+                            mProgressDialog = new ProgressDialog(getApplicationContext());
+                            mProgressDialog.setMessage("Идет загрузка...");
+                            //do work like update progress
+                            break;
+                        }
+                        case Fetch.STATUS_ERROR: {
+                            //Check error and take action. Retry?fetch.retry(downloadId);
+                            break;
+                        }
+                        default:
+                            //general action
+                    }
+
+                }
+            }
+        });
 
         File bookfolder = new File(String.valueOf(getExternalFilesDir(folderB)));
         List<Request> requestListPages = new ArrayList<>();
         ArrayList<String> pagesFiles = new ArrayList<>();
 //        String resultD;
-        mFetch = Fetch.newInstance(getApplicationContext());
+//        mFetch = Fetch.newInstance(getApplicationContext());
 //        mFetch.removeRequests(); //чистим базу запросов
 
         for (int i = 0; i < urlsFiles.length; i++) {
@@ -246,7 +264,19 @@ public class BookCardActivity extends AppCompatActivity {
             Log.d("my2", pageFilePath);
             pagesFiles.add(pageFilePath);
         }
+
         mFetch.enqueue(requestListPages);
+
+/*        mFetch.addFetchListener(new FetchListener() {
+            @Override
+            public void onUpdate(long id, int status, int progress, long downloadedBytes, long fileSize, int error) {
+
+                if(Fetch.STATUS_DOWNLOADING == status) {
+                    mProgressDialog = new ProgressDialog(getApplicationContext());
+                    mProgressDialog.setMessage("Идет загрузка...");
+                }
+            }
+        });*/
 
         BookFiles bookFiles = new BookFiles();
         bookFiles.setBookID(bookId);

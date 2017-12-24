@@ -32,15 +32,10 @@ import ru.yandex.matu1.toddlersbook.models.Cover;
 public class CustomSwipeAdapter extends PagerAdapter {
     Context ctx;
     ArrayList<String> pagesFiles;
-    ArrayList<String> soundsFiles;
-    String folderB;
 
-
-    public CustomSwipeAdapter(Context ctx, ArrayList<String> pagesFiles, ArrayList<String> soundsFiles, String folderB) {
+    public CustomSwipeAdapter(Context ctx, ArrayList<String> pagesFiles) {
         this.ctx = ctx;
         this.pagesFiles = pagesFiles;
-        this.soundsFiles = soundsFiles;
-        this.folderB = folderB;
     }
 
     @Override
@@ -56,12 +51,6 @@ public class CustomSwipeAdapter extends PagerAdapter {
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
 
-        String nameS = Uri.parse(soundsFiles.get(position)).getLastPathSegment();
-        final String soundPath = String.valueOf(ctx.getExternalFilesDir(folderB));
-        final Uri souF = Uri.fromFile(new File(soundPath, nameS));
-        final MediaPlayer mp = MyPlayer.getMp(ctx, souF);
-        mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
-
         LayoutInflater layoutInflatter = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         assert layoutInflatter != null;
         View item_view = layoutInflatter.inflate(R.layout.swipe_layout, container, false);
@@ -72,16 +61,6 @@ public class CustomSwipeAdapter extends PagerAdapter {
             imageView.setImageBitmap(myBitmap);
             container.addView(item_view);
         }
-        item_view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            if(!mp.isPlaying()) {
-                mp.start();
-            } else {
-                mp.pause();
-            }
-        }
-        });
 
         return item_view;
     }

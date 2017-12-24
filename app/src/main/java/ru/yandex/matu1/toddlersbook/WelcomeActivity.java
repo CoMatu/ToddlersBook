@@ -45,14 +45,8 @@ public class WelcomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
-/*
-        if (!checkPermissions()) {
-            setPermissions();
-        }
-*/
         ActivityCompat.requestPermissions(this, new String[]{
                 Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_CODE);
- //       new ParseJsonServer().execute();
     }
 
     private class ParseJsonServer extends AsyncTask<Void, Void, String> {
@@ -242,38 +236,5 @@ public class WelcomeActivity extends AppCompatActivity {
             }
         }
     }
-/*    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode != MY_PERMISSIONS_REQUEST_CODE) {
-            return;
-        }
-        boolean isGranted = true;
-        for (int result : grantResults) {
-            if (result != PackageManager.PERMISSION_GRANTED) {
-                isGranted = false;
-                break;
-            }
-        }
-
-        if (isGranted) {
-            Toast.makeText(WelcomeActivity.this, "Разрешения получены", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, "В разрешениях отказано", Toast.LENGTH_LONG).show();
-
-        }
-    }
-
-    private boolean checkPermissions() {
-        if (ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            return false;
-        }
-        return true;
-    }
-
-    private void setPermissions() {
-        ActivityCompat.requestPermissions(this, new String[]{
-                Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_CODE);
-    }*/
 
 }
