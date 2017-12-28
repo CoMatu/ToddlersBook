@@ -1,15 +1,11 @@
 package ru.yandex.matu1.toddlersbook;
 
-import android.annotation.SuppressLint;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Handler;
-import android.support.v4.content.res.TypedArrayUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,7 +14,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.tonyodev.fetch.Fetch;
 import com.tonyodev.fetch.listener.FetchListener;
 import com.tonyodev.fetch.request.Request;
@@ -30,36 +25,27 @@ import org.json.JSONTokener;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.StreamCorruptedException;
-import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import ru.yandex.matu1.toddlersbook.models.Book;
 import ru.yandex.matu1.toddlersbook.models.BookFiles;
 
 public class BookCardActivity extends AppCompatActivity {
-    public static final int DIALOG_DOWNLOAD_PROGRESS = 0;
-    private ProgressDialog mProgressDialog;
+//    private ProgressDialog mProgressDialog;
     private long downloadId = -1;
     static final String TAG = "myLogs";
     private int bookId;
     private String fileNamePath = "filesPath.json";
+    Fetch mFetch;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // Obtain the FirebaseAnalytics instance.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_card);
 
@@ -75,11 +61,9 @@ public class BookCardActivity extends AppCompatActivity {
         imageView.setImageBitmap(myBitmap);
 
         final Button buttonDownload = (Button) findViewById(R.id.button);
-//        Button buttonRead = (Button) findViewById(R.id.button2);
 
         String fileListBook = "list_" + "book_" + bookId + ".json";
 
-//        String filePath = getApplicationContext().getFilesDir().getPath() + "/" + fileListBook;
 
         /**
          * Проверим наличие файлов в папке bookfiles_1, bookfiles_2, ...
@@ -216,42 +200,15 @@ public class BookCardActivity extends AppCompatActivity {
     }
 
     private void DownloadFilesBook(String[] urlsFiles) {
-        final Fetch mFetch = Fetch.newInstance(this);
+//        final Fetch
+                mFetch = Fetch.newInstance(this);
         String folderB = "bookfiles_" + bookId;
         String fileNameForWrite = "book_" + bookId + ".json";
 
-        mFetch.addFetchListener(new FetchListener() {
-            @Override
-            public void onUpdate(long id, int status, int progress, long downloadedBytes, long fileSize, int error) {
-
-                if(id == downloadId) {
-
-                    switch (status) {
-
-                        case Fetch.STATUS_DOWNLOADING: {
-                            mProgressDialog = new ProgressDialog(getApplicationContext());
-                            mProgressDialog.setMessage("Идет загрузка...");
-                            //do work like update progress
-                            break;
-                        }
-                        case Fetch.STATUS_ERROR: {
-                            //Check error and take action. Retry?fetch.retry(downloadId);
-                            break;
-                        }
-                        default:
-                            //general action
-                    }
-
-                }
-            }
-        });
 
         File bookfolder = new File(String.valueOf(getExternalFilesDir(folderB)));
-        List<Request> requestListPages = new ArrayList<>();
+//        List<Request> requestListPages = new ArrayList<>();
         ArrayList<String> pagesFiles = new ArrayList<>();
-//        String resultD;
-//        mFetch = Fetch.newInstance(getApplicationContext());
-//        mFetch.removeRequests(); //чистим базу запросов
 
         for (int i = 0; i < urlsFiles.length; i++) {
             String url = urlsFiles[i];
@@ -259,24 +216,15 @@ public class BookCardActivity extends AppCompatActivity {
             String fileName = Uri.parse(url).getLastPathSegment();
             Log.d("my2", fileName);
             Request request = new Request(url, path, fileName);
-            requestListPages.add(request);
+//            requestListPages.add(request);
             String pageFilePath = path + "/" + fileName;
             Log.d("my2", pageFilePath);
             pagesFiles.add(pageFilePath);
+            downloadId = mFetch.enqueue(request);
+
         }
 
-        mFetch.enqueue(requestListPages);
-
-/*        mFetch.addFetchListener(new FetchListener() {
-            @Override
-            public void onUpdate(long id, int status, int progress, long downloadedBytes, long fileSize, int error) {
-
-                if(Fetch.STATUS_DOWNLOADING == status) {
-                    mProgressDialog = new ProgressDialog(getApplicationContext());
-                    mProgressDialog.setMessage("Идет загрузка...");
-                }
-            }
-        });*/
+//        mFetch.enqueue(requestListPages);
 
         BookFiles bookFiles = new BookFiles();
         bookFiles.setBookID(bookId);
