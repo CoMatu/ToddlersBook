@@ -8,55 +8,38 @@
 
     <ImageView
         android:id="@+id/imageView6"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:scaleType="center"
-        tools:ignore="ContentDescription"
-        app:srcCompat="@drawable/fonhdpi" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        app:srcCompat="@drawable/fonhdpi"
+        tools:ignore="ContentDescription" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:padding="23dp">
+        android:padding="40dp">
 
         <FrameLayout
             android:id="@+id/frameLayout"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_weight="1"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.488"
+            android:layout_weight="0.5"
+            android:foreground="@drawable/framehdpi"
+
+            android:padding="18dp"
             tools:ignore="ContentDescription">
 
             <ImageView
                 android:id="@+id/imageView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_gravity="center_vertical"
-                android:padding="20dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.102"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.583"
+                android:layout_gravity="center"
+                android:adjustViewBounds="true"
+                android:scaleType="fitXY"
                 app:srcCompat="@drawable/cat1"
                 tools:ignore="ContentDescription" />
 
-            <ImageView
-                android:id="@+id/imageView5"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:srcCompat="@drawable/frame_mdpi"
-                tools:ignore="ContentDescription"
-                tools:layout_editor_absoluteX="228dp"
-                tools:layout_editor_absoluteY="193dp" />
 
         </FrameLayout>
 
@@ -69,16 +52,10 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:layout_weight="0.5"
+            android:layout_weight="0.2"
             android:background="@drawable/buttonhdpi"
             android:scaleType="fitCenter"
             android:text="@string/download_text"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.555"
-            app:layout_constraintStart_toEndOf="@+id/frameLayout"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.498"
             app:srcCompat="@drawable/buttonhdpi"
             tools:ignore="ContentDescription" />
 

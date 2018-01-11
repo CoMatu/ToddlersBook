@@ -20,8 +20,8 @@
 
         <ImageView
             android:id="@+id/iv_recycler_item"
-            android:layout_width="295dp"
-            android:layout_height="225dp"
+            android:layout_width="306dp"
+            android:layout_height="232dp"
             android:layout_marginStart="28dp"
             android:layout_marginTop="20dp"
             android:background="@android:color/transparent"
@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:scaleType="fitCenter"
-            app:srcCompat="@drawable/frame_mdpi"
+            app:srcCompat="@drawable/framehdpi"
             tools:ignore="ContentDescription" />
 
 
