@@ -47,18 +47,4 @@ public class MyJSON {
             return null;
         }
     }
-/*
-    public static void saveJsData(Context context, ArrayList<Uri> jsFilePath, String fileName) {
-        try {
-            FileWriter file = new FileWriter(context.getFilesDir().getPath() + "/" + fileName);
-            file.write(String.valueOf(jsFilePath));
-            file.flush();
-            Log.d(LOG_TAG, "method saveJsData - File writted ");
-
-        } catch (IOException e) {
-            Log.e("TAG", "Error in Writing: " + e.getLocalizedMessage());
-        }
-    }
-*/
-
 }

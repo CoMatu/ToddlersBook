@@ -1,6 +1,7 @@
 package ru.yandex.matu1.toddlersbook;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,11 +12,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import com.google.gson.Gson;
 import com.tonyodev.fetch.Fetch;
-import com.tonyodev.fetch.listener.FetchListener;
 import com.tonyodev.fetch.request.Request;
 
 import org.json.JSONArray;
@@ -40,17 +41,26 @@ public class BookCardActivity extends AppCompatActivity {
     private long downloadId = -1;
     static final String TAG = "myLogs";
     private int bookId;
-    private String fileNamePath = "filesPath.json";
     Fetch mFetch;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_card);
 
+        ImageButton imageButton = (ImageButton) findViewById(R.id.imageButtonHome);
+        View.OnClickListener clickHome = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GoHome();
+            }
+        };
+
+        imageButton.setOnClickListener(clickHome);
+
         BookUriFromId();
 
+        String fileNamePath = "filesPath.json";
         String covers = MyJSON.getData(this, fileNamePath);
         ArrayList<String> coversPaths = getFilesPathFromFile(covers);
 
@@ -61,9 +71,6 @@ public class BookCardActivity extends AppCompatActivity {
         imageView.setImageBitmap(myBitmap);
 
         final Button buttonDownload = (Button) findViewById(R.id.button);
-
-        String fileListBook = "list_" + "book_" + bookId + ".json";
-
 
         /**
          * Проверим наличие файлов в папке bookfiles_1, bookfiles_2, ...
@@ -112,10 +119,32 @@ public class BookCardActivity extends AppCompatActivity {
                             String[] urlsPages = pages.toArray(new String[0]);
                             String[] urlsSounds = sounds.toArray(new String[0]);
                             String[] urlsFiles = ArrayAndArrayNewArray(urlsPages, urlsSounds);
-                            DownloadFilesBook(urlsFiles);
+                            downloadFilesBook(urlsFiles);
                         }
                     });
                     mThread.start(); // запустили поток 2
+
+                    ProgressDialog progressDialog = new ProgressDialog(BookCardActivity.this);
+                    progressDialog.setMessage(getString(R.string.progressDialogText));
+
+                    progressDialog.setCancelable(false);
+                    progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+
+                    progressDialog.show();
+
+                    try {
+                        mThread.join(5000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+//                    progressDialog.dismiss();
+
                     buttonDownload.setText(R.string.buttonRead);
                     buttonDownload.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -180,13 +209,13 @@ public class BookCardActivity extends AppCompatActivity {
         String fileBook = "list_" + "book_" + bookId + ".json";
 
         try {
-            String jsUrl = "http://human-factors.ru/todbook/book" + bookId + ".json";
+            String jsUrl = "http://skazkimal.ru/todbook/book" + bookId + ".json";
             URL url = new URL(jsUrl);
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
             urlConnection.connect();
             InputStream inputStream = urlConnection.getInputStream();
-            StringBuffer buffer = new StringBuffer();
+            StringBuilder buffer = new StringBuilder();
             reader = new BufferedReader(new InputStreamReader(inputStream));
             String line;
             while ((line = reader.readLine()) != null) {
@@ -199,15 +228,12 @@ public class BookCardActivity extends AppCompatActivity {
         }
     }
 
-    private void DownloadFilesBook(String[] urlsFiles) {
-//        final Fetch
-                mFetch = Fetch.newInstance(this);
+    private void downloadFilesBook(String[] urlsFiles) {
+        mFetch = Fetch.newInstance(this);
         String folderB = "bookfiles_" + bookId;
         String fileNameForWrite = "book_" + bookId + ".json";
 
-
         File bookfolder = new File(String.valueOf(getExternalFilesDir(folderB)));
-//        List<Request> requestListPages = new ArrayList<>();
         ArrayList<String> pagesFiles = new ArrayList<>();
 
         for (int i = 0; i < urlsFiles.length; i++) {
@@ -216,15 +242,11 @@ public class BookCardActivity extends AppCompatActivity {
             String fileName = Uri.parse(url).getLastPathSegment();
             Log.d("my2", fileName);
             Request request = new Request(url, path, fileName);
-//            requestListPages.add(request);
             String pageFilePath = path + "/" + fileName;
             Log.d("my2", pageFilePath);
             pagesFiles.add(pageFilePath);
             downloadId = mFetch.enqueue(request);
-
         }
-
-//        mFetch.enqueue(requestListPages);
 
         BookFiles bookFiles = new BookFiles();
         bookFiles.setBookID(bookId);
@@ -272,4 +294,17 @@ public class BookCardActivity extends AppCompatActivity {
         }
         return res;
     }
+
+    private void GoHome() {
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = new Intent(BookCardActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        }, 10);
+    }
+
 }

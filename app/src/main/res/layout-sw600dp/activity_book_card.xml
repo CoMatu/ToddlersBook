@@ -23,9 +23,10 @@
         <FrameLayout
             android:id="@+id/frameLayout"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="0.7"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
 
+            android:layout_weight="0.7"
             android:foreground="@drawable/frame"
             android:padding="18dp"
             tools:ignore="ContentDescription">
@@ -35,6 +36,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
+                android:layout_margin="20dp"
                 android:adjustViewBounds="true"
                 android:scaleType="fitXY"
                 app:srcCompat="@drawable/cat1"
@@ -53,8 +55,8 @@
 
             <ImageButton
                 android:id="@+id/imageButtonHome"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
                 android:layout_alignParentBottom="true"
                 android:layout_gravity="center_vertical|center_horizontal|center"
                 android:layout_marginBottom="5dp"
@@ -67,11 +69,12 @@
             <Button
                 android:id="@+id/button"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="70dp"
                 android:layout_gravity="center_vertical|center_horizontal|center"
+                android:layout_margin="30dp"
                 android:layout_marginBottom="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginStart="30dp"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/buttonhdpi"
                 android:gravity="center"

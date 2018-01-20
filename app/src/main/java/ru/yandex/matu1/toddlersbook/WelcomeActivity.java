@@ -36,7 +36,7 @@ public class WelcomeActivity extends AppCompatActivity {
     private boolean CheckFileStorage = false;
     private final int MY_PERMISSIONS_REQUEST_CODE = 1;
     private String fileNamePath = "filesPath.json";
-    private String urlServerJson = "http://human-factors.ru/todbook/booklist.json";
+    private String urlServerJson = "http://skazkimal.ru/todbook/booklist.json";
 
     @Override
 

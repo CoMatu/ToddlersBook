@@ -6,4 +6,5 @@
     <string name="NoInternetText">Для первого запуска программы необходим интернет! Выйдите из приложения и попробуйте снова!</string>
     <string name="download_text">Загрузить</string>
     <string name="todo">TODO</string>
+    <string name="progressDialogText">Пожалуйста, подождите несколько секунд, идет загрузка файлов...</string>
 </resources>

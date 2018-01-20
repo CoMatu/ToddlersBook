@@ -1,22 +1,16 @@
 package ru.yandex.matu1.toddlersbook;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.tonyodev.fetch.Fetch;
-import com.tonyodev.fetch.listener.FetchListener;
 import com.tonyodev.fetch.request.Request;
 
 import java.io.BufferedReader;
@@ -37,11 +31,10 @@ public class BookLoaderActivity extends AppCompatActivity {
     static final String TAG = "myLogs";
     private int bookId;
 
-    // "http://human-factors.ru/todbook/book1.json";
+    // "http://skazkimal.ru/todbook/book1.json";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // Obtain the FirebaseAnalytics instance.
         Type itemsListType = new TypeToken<List<String>>() {}.getType();
 
         super.onCreate(savedInstanceState);
@@ -62,21 +55,14 @@ public class BookLoaderActivity extends AppCompatActivity {
 
             ArrayList<String> pagesPath;
             ArrayList<String> soundsPath;
-//            pagesPath = new ArrayList<>();
             soundsPath = new ArrayList<>();
 
             File bookfolder = new File(String.valueOf(getExternalFilesDir(folderB)));
-//            Log.d("my2", String.valueOf(bookfolder));
 
             if (!bookfolder.exists()) {
                 bookfolder.mkdirs();
                 Log.d("my", "dir. created");
             }
-/*
-            else {
-                Log.d("my", "dir. already exists");
-            }
-*/
 
             try {
                 String result = bookLoader.get();
@@ -99,14 +85,6 @@ public class BookLoaderActivity extends AppCompatActivity {
                 Gson gson11 = new Gson();
                 String filesJson = gson11.toJson(bookFiles);
 
-/*
-                if (checkPermissions()) {
-                    Toast.makeText(BookLoaderActivity.this, "Разрешения уже получены", Toast.LENGTH_SHORT).show();
-                } else {
-                    setPermissions();
-                }
-*/
-
                 MyJSON.saveData(this, filesJson, fileBookStorage);
 
             } catch (InterruptedException | ExecutionException e) {
@@ -121,7 +99,7 @@ public class BookLoaderActivity extends AppCompatActivity {
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
         String resultJsonBook = "";
-        private String bookIdJson = "http://human-factors.ru/todbook/book"+bookId+".json";
+        private String bookIdJson = "http://skazkimal.ru/todbook/book"+bookId+".json";
 
         @Override
         protected String doInBackground(Void... voids) {
@@ -184,7 +162,6 @@ public class BookLoaderActivity extends AppCompatActivity {
             }
 
             mFetch.enqueue(requestListPages);
-//            resultD = String.valueOf(pagesPath);
             String resultD = new Gson().toJson(pagesPath);
             return resultD;
 
@@ -212,41 +189,5 @@ public class BookLoaderActivity extends AppCompatActivity {
             }
         }, 20);
     }
-
-/*
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode != MY_PERMISSIONS_REQUEST_CODE) {
-            return;
-        }
-        boolean isGranted = true;
-        for (int result : grantResults) {
-            if (result != PackageManager.PERMISSION_GRANTED) {
-                isGranted = false;
-                break;
-            }
-        }
-
-        if (isGranted) {
-            Toast.makeText(BookLoaderActivity.this, "Разрешения получены", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, "В разрешениях отказано", Toast.LENGTH_LONG).show();
-
-        }
-    }
-
-    private boolean checkPermissions() {
-        if (ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            return false;
-        }
-        return true;
-    }
-
-    private void setPermissions() {
-        ActivityCompat.requestPermissions(this, new String[]{
-                Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_CODE);
-    }
-*/
 
 }

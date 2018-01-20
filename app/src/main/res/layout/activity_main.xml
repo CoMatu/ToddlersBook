@@ -13,8 +13,8 @@
         android:adjustViewBounds="false"
         android:contentDescription="@string/todo"
         android:cropToPadding="false"
-        android:scaleType="centerCrop"
-        app:srcCompat="@drawable/fonhdpi" />
+        android:scaleType="fitXY"
+        app:srcCompat="@drawable/wood" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerview"
