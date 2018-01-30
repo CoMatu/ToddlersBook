@@ -79,8 +79,20 @@ public class SliderActivity extends AppCompatActivity implements CompoundButton.
 
         //слушаем номер слайда при перелистывании
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            Boolean first = true;
             @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            public void onPageScrolled(final int position, float positionOffset, int positionOffsetPixels) {
+                if (first && positionOffset == 0 && positionOffsetPixels == 0){
+                    onPageSelected(0);
+                    first = false;
+                }
+                mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    int pagen = position+1;
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        viewPager.setCurrentItem(pagen, true);
+                    }
+                });
 
             }
 
@@ -95,6 +107,7 @@ public class SliderActivity extends AppCompatActivity implements CompoundButton.
 
                 if (toggleButton.isChecked()){
                     mp.start();
+
                 }
             }
 
@@ -103,27 +116,6 @@ public class SliderActivity extends AppCompatActivity implements CompoundButton.
 
             }
         });
-
-        ViewPager.OnPageChangeListener listener = new ViewPager.SimpleOnPageChangeListener() {
-
-            @Override
-            public void onPageSelected(int position) {
-                String nameS = Uri.parse(soundsFiles.get(position)).getLastPathSegment();
-                if(mp != null){
-                    mp.stop();
-                }
-                getMedia(nameS, folderB);
-                toggleButton.setOnCheckedChangeListener(SliderActivity.this);
-
-                if (toggleButton.isChecked()){
-                    mp.start();
-                }
-            }
-        };
-
-        viewPager.addOnPageChangeListener(listener);
-
-        listener.onPageSelected(0);
 
     }
 
