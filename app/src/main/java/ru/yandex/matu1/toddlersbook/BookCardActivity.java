@@ -14,9 +14,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.google.gson.Gson;
 import com.tonyodev.fetch.Fetch;
+import com.tonyodev.fetch.listener.FetchListener;
 import com.tonyodev.fetch.request.Request;
 
 import org.json.JSONArray;
@@ -42,11 +44,15 @@ public class BookCardActivity extends AppCompatActivity {
     static final String TAG = "myLogs";
     private int bookId;
     Fetch mFetch;
+    ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_card);
+
+        progressBar = (ProgressBar) findViewById(R.id.progressBar3);
+
 
         ImageButton imageButton = (ImageButton) findViewById(R.id.imageButtonHome);
         View.OnClickListener clickHome = new View.OnClickListener() {
@@ -124,6 +130,7 @@ public class BookCardActivity extends AppCompatActivity {
                     });
                     mThread.start(); // запустили поток 2
 
+/*
                     ProgressDialog progressDialog = new ProgressDialog(BookCardActivity.this);
                     progressDialog.setMessage(getString(R.string.progressDialogText));
 
@@ -136,12 +143,15 @@ public class BookCardActivity extends AppCompatActivity {
                     });
 
                     progressDialog.show();
+*/
 
+/*
                     try {
                         mThread.join(5000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+*/
 
 //                    progressDialog.dismiss();
 
@@ -232,6 +242,7 @@ public class BookCardActivity extends AppCompatActivity {
         mFetch = Fetch.newInstance(this);
         String folderB = "bookfiles_" + bookId;
         String fileNameForWrite = "book_" + bookId + ".json";
+        int progress = 0;
 
         File bookfolder = new File(String.valueOf(getExternalFilesDir(folderB)));
         ArrayList<String> pagesFiles = new ArrayList<>();
@@ -246,7 +257,22 @@ public class BookCardActivity extends AppCompatActivity {
             Log.d("my2", pageFilePath);
             pagesFiles.add(pageFilePath);
             downloadId = mFetch.enqueue(request);
+
+            mFetch.addFetchListener(new FetchListener() {
+                @Override
+                public void onUpdate(long id, int status, int progress, long downloadedBytes, long fileSize, int error) {
+
+                    Log.i("fetchDebug","id: " + id + " downloadedBytes: " + downloadedBytes + " / fileSize: " + fileSize);
+
+                    if(status == Fetch.STATUS_DONE){
+                        progressBar.setVisibility(ProgressBar.INVISIBLE);
+
+                    }
+
+                }
+            });
         }
+
 
         BookFiles bookFiles = new BookFiles();
         bookFiles.setBookID(bookId);

@@ -40,6 +40,14 @@
                 app:srcCompat="@drawable/cat1"
                 tools:ignore="ContentDescription" />
 
+            <ProgressBar
+                android:id="@+id/progressBar3"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="95dp"
+                android:layout_height="95dp"
+                android:visibility="invisible"
+                android:layout_gravity="center" />
+
 
         </FrameLayout>
 
@@ -79,6 +87,7 @@
                 android:text="@string/download_text"
                 app:srcCompat="@drawable/buttonhdpi"
                 tools:ignore="ContentDescription" />
+
         </LinearLayout>
 
     </LinearLayout>
