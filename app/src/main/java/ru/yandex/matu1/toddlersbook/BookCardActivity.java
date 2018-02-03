@@ -1,11 +1,10 @@
 package ru.yandex.matu1.toddlersbook;
 
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,9 +16,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.google.gson.Gson;
-import com.tonyodev.fetch.Fetch;
-import com.tonyodev.fetch.listener.FetchListener;
-import com.tonyodev.fetch.request.Request;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,6 +24,8 @@ import org.json.JSONTokener;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -39,11 +37,8 @@ import ru.yandex.matu1.toddlersbook.models.Book;
 import ru.yandex.matu1.toddlersbook.models.BookFiles;
 
 public class BookCardActivity extends AppCompatActivity {
-//    private ProgressDialog mProgressDialog;
-    private long downloadId = -1;
     static final String TAG = "myLogs";
     private int bookId;
-    Fetch mFetch;
     ProgressBar progressBar;
 
     @Override
@@ -53,18 +48,17 @@ public class BookCardActivity extends AppCompatActivity {
 
         progressBar = (ProgressBar) findViewById(R.id.progressBar3);
 
-
         ImageButton imageButton = (ImageButton) findViewById(R.id.imageButtonHome);
         View.OnClickListener clickHome = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                GoHome();
+                goHome();
             }
         };
 
         imageButton.setOnClickListener(clickHome);
 
-        BookUriFromId();
+        bookUriFromId();
 
         String fileNamePath = "filesPath.json";
         String covers = MyJSON.getData(this, fileNamePath);
@@ -82,28 +76,25 @@ public class BookCardActivity extends AppCompatActivity {
          * Проверим наличие файлов в папке bookfiles_1, bookfiles_2, ...
          */
         String folderBook = "bookfiles_" + bookId;
-        int count = 0;
         /**
          * Проверяем необходимость загрузки файлов
          */
 
-        File rootFile = new File(String.valueOf(getExternalFilesDir(folderBook)));
-        File[] filesArray = rootFile.listFiles();
+        File rootFile1 = new File(String.valueOf(getExternalFilesDir(folderBook)));
+        File[] filesArray = rootFile1.listFiles();
         int numbFiles = filesArray.length;
         if (numbFiles == 0) {
 
             buttonDownload.setText(R.string.buttonDownload);
-            /**
-             * Загрузим json с url файлов книги
-             */
 
             Thread jsDownload = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    BookLoader();
+                    bookLoader();
                 }
             });
-            jsDownload.start(); // запустили поток 1
+            jsDownload.start(); // запустили поток 1*/
+
 
             /**
              * Обрабатываем нажатие кнопки "Загрузить" и грузим файлы книги
@@ -112,54 +103,28 @@ public class BookCardActivity extends AppCompatActivity {
             buttonDownload.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Thread mThread = new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            String fileListB = "list_" + "book_" + bookId + ".json";
-                            String jsReadFile = MyJSON.getData(getApplicationContext(), fileListB);
-                            Log.d(TAG, jsReadFile);
-                            Gson gson = new Gson();
-                            Book book = gson.fromJson(jsReadFile, Book.class);
-                            List<String> pages = book.getPageUrl();
-                            List<String> sounds = book.getSoundUrl();
-                            String[] urlsPages = pages.toArray(new String[0]);
-                            String[] urlsSounds = sounds.toArray(new String[0]);
-                            String[] urlsFiles = ArrayAndArrayNewArray(urlsPages, urlsSounds);
-                            downloadFilesBook(urlsFiles);
-                        }
-                    });
-                    mThread.start(); // запустили поток 2
 
-/*
-                    ProgressDialog progressDialog = new ProgressDialog(BookCardActivity.this);
-                    progressDialog.setMessage(getString(R.string.progressDialogText));
 
-                    progressDialog.setCancelable(false);
-                    progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-
-                    progressDialog.show();
-*/
-
-/*
-                    try {
-                        mThread.join(5000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-*/
-
-//                    progressDialog.dismiss();
+// Составляем список url для загрузки файлов. Читаем их из ранее записанного json
+                    String fileListB = "list_" + "book_" + bookId + ".json";
+                    String jsReadFile = MyJSON.getData(getApplicationContext(), fileListB);
+//                    Log.d(TAG, jsReadFile);
+                    Gson gson = new Gson();
+                    Book book = gson.fromJson(jsReadFile, Book.class);
+                    List<String> pages = book.getPageUrl();
+                    List<String> sounds = book.getSoundUrl();
+                    String[] urlsPages = pages.toArray(new String[0]);
+                    String[] urlsSounds = sounds.toArray(new String[0]);
+                    String[] urlsFiles = arrayAndArrayNewArray(urlsPages, urlsSounds);
+// Запускаем загрузку файлов AsyncTask
+                    BookFilesLoader bookFilesLoader = new BookFilesLoader();
+                    bookFilesLoader.execute(urlsFiles);
 
                     buttonDownload.setText(R.string.buttonRead);
                     buttonDownload.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            NextActivity();
+                            nextActivity();
                         }
                     });
                 }
@@ -169,21 +134,21 @@ public class BookCardActivity extends AppCompatActivity {
             buttonDownload.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    NextActivity();
+                    nextActivity();
                 }
             });
 
         }
     }
 
-    private void BookUriFromId() {
+    private void bookUriFromId() {
         //получаем номер ID книги, с обложки которой перешли в слайдер
         Intent intent = getIntent();
         bookId = intent.getIntExtra("bookId", 1);
         Log.d(TAG, "You read book №" + bookId);
     }
 
-    private void NextActivity() {
+    private void nextActivity() {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -211,7 +176,7 @@ public class BookCardActivity extends AppCompatActivity {
         return urisImg;
     }
 
-    private void BookLoader() {
+    private void bookLoader() {
 
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
@@ -238,57 +203,7 @@ public class BookCardActivity extends AppCompatActivity {
         }
     }
 
-    private void downloadFilesBook(String[] urlsFiles) {
-        mFetch = Fetch.newInstance(this);
-        String folderB = "bookfiles_" + bookId;
-        String fileNameForWrite = "book_" + bookId + ".json";
-        int progress = 0;
-
-        File bookfolder = new File(String.valueOf(getExternalFilesDir(folderB)));
-        ArrayList<String> pagesFiles = new ArrayList<>();
-
-        for (int i = 0; i < urlsFiles.length; i++) {
-            String url = urlsFiles[i];
-            String path = String.valueOf(bookfolder);
-            String fileName = Uri.parse(url).getLastPathSegment();
-            Log.d("my2", fileName);
-            Request request = new Request(url, path, fileName);
-            String pageFilePath = path + "/" + fileName;
-            Log.d("my2", pageFilePath);
-            pagesFiles.add(pageFilePath);
-            downloadId = mFetch.enqueue(request);
-
-            mFetch.addFetchListener(new FetchListener() {
-                @Override
-                public void onUpdate(long id, int status, int progress, long downloadedBytes, long fileSize, int error) {
-
-                    Log.i("fetchDebug","id: " + id + " downloadedBytes: " + downloadedBytes + " / fileSize: " + fileSize);
-
-                    if(status == Fetch.STATUS_DONE){
-                        progressBar.setVisibility(ProgressBar.INVISIBLE);
-
-                    }
-
-                }
-            });
-        }
-
-
-        BookFiles bookFiles = new BookFiles();
-        bookFiles.setBookID(bookId);
-
-        ArrayList<String> pagesPath = getPagesArray(pagesFiles);
-        ArrayList<String> soundsPath = getSoundsArray(pagesFiles);
-
-        bookFiles.setPagesPath(pagesPath);
-        bookFiles.setSoundsPath(soundsPath);
-        Gson gson11 = new Gson();
-        String filesJson = gson11.toJson(bookFiles);
-
-        MyJSON.saveData(getApplicationContext(), filesJson, fileNameForWrite);
-    }
-
-    public static String[] ArrayAndArrayNewArray(String[] a, String[] b) {
+    public static String[] arrayAndArrayNewArray(String[] a, String[] b) {
         if (a == null)
             return b;
         if (b == null)
@@ -321,7 +236,7 @@ public class BookCardActivity extends AppCompatActivity {
         return res;
     }
 
-    private void GoHome() {
+    private void goHome() {
 
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -333,4 +248,87 @@ public class BookCardActivity extends AppCompatActivity {
         }, 10);
     }
 
+    private class BookFilesLoader extends AsyncTask<String, Integer, ArrayList<String>> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+        }
+
+        @Override
+        protected ArrayList<String> doInBackground(String... urlsFiles) {
+            ArrayList<String> pagesFiles = new ArrayList<>();
+
+            try {
+
+                for (int i = 0; i < urlsFiles.length; i++) {
+                    String fileName = Uri.parse(urlsFiles[i]).getLastPathSegment();
+                    String filePath = downloadFile(urlsFiles[i], fileName);// загрузил и записал файл
+                    pagesFiles.add(filePath);
+                }
+
+                BookFiles bookFiles = new BookFiles();
+                bookFiles.setBookID(bookId);
+                ArrayList<String> pagesPath = getPagesArray(pagesFiles);
+                ArrayList<String> soundsPath = getSoundsArray(pagesFiles);
+                bookFiles.setPagesPath(pagesPath);
+                bookFiles.setSoundsPath(soundsPath);
+                Gson gson11 = new Gson();
+                String filesJson = gson11.toJson(bookFiles);
+                String fileNameForWrite = "book_" + bookId + ".json"; // имя json для записи
+                MyJSON.saveData(getApplicationContext(), filesJson, fileNameForWrite);
+
+            } catch (Exception e) {
+                Log.e("Error: ", e.getMessage());
+            }
+
+
+
+            return pagesFiles;
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<String> pagesFiles) {
+            super.onPostExecute(pagesFiles);
+
+        }
+
+    }
+
+    private String downloadFile(String fileURL, String fileName) {
+        String folderB = "bookfiles_" + bookId; // имя папки для записи файла
+        String rootDir = String.valueOf(getExternalFilesDir(folderB));
+        try {
+            File rootFile = new File(String.valueOf(getExternalFilesDir(folderB)));
+            if (!rootFile.exists()) {
+                rootFile.mkdir();
+            }
+            URL url = new URL(fileURL);
+            HttpURLConnection c = (HttpURLConnection) url.openConnection();
+            c.setRequestMethod("GET");
+            c.setDoOutput(true);
+            c.connect();
+            FileOutputStream f = new FileOutputStream(new File(rootFile,
+                    fileName));
+            InputStream in = c.getInputStream();
+            byte[] buffer = new byte[1024];
+            int len1 = 0;
+            while ((len1 = in.read(buffer)) > 0) {
+                f.write(buffer, 0, len1);
+            }
+            f.close();
+        } catch (IOException e) {
+            Log.d("Error....", e.toString());
+        }
+        String filePathForWrite = rootDir+File.separator+fileName;
+        return filePathForWrite;
+
+    }
 }

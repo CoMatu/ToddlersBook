@@ -1,19 +1,12 @@
 package ru.yandex.matu1.toddlersbook;
 
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.net.Uri;
-import android.support.annotation.NonNull;
 import android.util.Log;
-import android.widget.Toast;
-
-import org.json.JSONArray;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class MyJSON {
 
