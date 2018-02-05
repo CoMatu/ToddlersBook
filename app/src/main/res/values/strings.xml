@@ -8,4 +8,5 @@
     <string name="todo">TODO</string>
     <string name="progressDialogText">Пожалуйста, подождите несколько секунд, идет загрузка файлов...</string>
     <string name="title_activity_main2">Main2Activity</string>
+    <string name="_111">111</string>
 </resources>

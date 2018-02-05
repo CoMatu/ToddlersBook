@@ -18,7 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:padding="40dp">
+        android:padding="40dp" android:baselineAligned="false">
 
         <FrameLayout
             android:id="@+id/frameLayout"
@@ -40,15 +40,6 @@
                 app:srcCompat="@drawable/cat1"
                 tools:ignore="ContentDescription" />
 
-            <ProgressBar
-                android:id="@+id/progressBar3"
-                style="?android:attr/progressBarStyle"
-                android:layout_width="95dp"
-                android:layout_height="95dp"
-                android:visibility="invisible"
-                android:layout_gravity="center" />
-
-
         </FrameLayout>
 
         <LinearLayout
@@ -63,14 +54,13 @@
                 android:id="@+id/imageButtonHome"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:layout_alignParentBottom="true"
                 android:layout_gravity="center_vertical|center_horizontal|center"
                 android:layout_marginBottom="5dp"
-                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
                 android:layout_marginTop="5dp"
                 android:background="@android:color/transparent"
                 android:scaleType="fitCenter"
-                app:srcCompat="@drawable/home_button_hdpi" />
+                app:srcCompat="@drawable/home_button_hdpi" android:contentDescription="@string/_111"/>
 
             <Button
                 android:id="@+id/button"
@@ -91,5 +81,13 @@
         </LinearLayout>
 
     </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar3"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="349dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:progressDrawable="@drawable/custom_progressbar" />
 
 </FrameLayout>

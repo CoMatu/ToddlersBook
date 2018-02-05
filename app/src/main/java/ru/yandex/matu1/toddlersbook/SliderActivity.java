@@ -42,6 +42,7 @@ public class SliderActivity extends AppCompatActivity implements CompoundButton.
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_slider);
         imageButton = (ImageButton) findViewById(R.id.imageButtonHome);
         View.OnClickListener clickHome = new View.OnClickListener() {

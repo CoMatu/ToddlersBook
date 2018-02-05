@@ -40,6 +40,7 @@ public class BookCardActivity extends AppCompatActivity {
     static final String TAG = "myLogs";
     private int bookId;
     ProgressBar progressBar;
+    Button buttonDownload;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +48,7 @@ public class BookCardActivity extends AppCompatActivity {
         setContentView(R.layout.activity_book_card);
 
         progressBar = (ProgressBar) findViewById(R.id.progressBar3);
+        progressBar.setVisibility(View.INVISIBLE);
 
         ImageButton imageButton = (ImageButton) findViewById(R.id.imageButtonHome);
         View.OnClickListener clickHome = new View.OnClickListener() {
@@ -70,7 +72,7 @@ public class BookCardActivity extends AppCompatActivity {
         Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
         imageView.setImageBitmap(myBitmap);
 
-        final Button buttonDownload = (Button) findViewById(R.id.button);
+        buttonDownload = (Button) findViewById(R.id.button);
 
         /**
          * Проверим наличие файлов в папке bookfiles_1, bookfiles_2, ...
@@ -104,7 +106,6 @@ public class BookCardActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
 
-
 // Составляем список url для загрузки файлов. Читаем их из ранее записанного json
                     String fileListB = "list_" + "book_" + bookId + ".json";
                     String jsReadFile = MyJSON.getData(getApplicationContext(), fileListB);
@@ -120,7 +121,6 @@ public class BookCardActivity extends AppCompatActivity {
                     BookFilesLoader bookFilesLoader = new BookFilesLoader();
                     bookFilesLoader.execute(urlsFiles);
 
-                    buttonDownload.setText(R.string.buttonRead);
                     buttonDownload.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -252,6 +252,7 @@ public class BookCardActivity extends AppCompatActivity {
 
         @Override
         protected void onPreExecute() {
+            progressBar.setVisibility(View.VISIBLE);
             super.onPreExecute();
 
         }
@@ -259,6 +260,9 @@ public class BookCardActivity extends AppCompatActivity {
         @Override
         protected ArrayList<String> doInBackground(String... urlsFiles) {
             ArrayList<String> pagesFiles = new ArrayList<>();
+            int filesCount = urlsFiles.length; // переменная для прогрессбара
+            progressBar.setMax(filesCount);
+            int count = 1;
 
             try {
 
@@ -266,6 +270,8 @@ public class BookCardActivity extends AppCompatActivity {
                     String fileName = Uri.parse(urlsFiles[i]).getLastPathSegment();
                     String filePath = downloadFile(urlsFiles[i], fileName);// загрузил и записал файл
                     pagesFiles.add(filePath);
+                    publishProgress(count);
+                    count++;
                 }
 
                 BookFiles bookFiles = new BookFiles();
@@ -290,14 +296,16 @@ public class BookCardActivity extends AppCompatActivity {
 
         @Override
         protected void onProgressUpdate(Integer... values) {
+            progressBar.setProgress(values[0]);
             super.onProgressUpdate(values);
 
         }
 
         @Override
         protected void onPostExecute(ArrayList<String> pagesFiles) {
+            progressBar.setVisibility(View.GONE);
+            buttonDownload.setText(R.string.buttonRead);
             super.onPostExecute(pagesFiles);
-
         }
 
     }
