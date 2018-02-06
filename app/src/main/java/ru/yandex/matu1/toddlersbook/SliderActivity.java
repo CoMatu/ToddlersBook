@@ -101,7 +101,7 @@ public class SliderActivity extends AppCompatActivity implements CompoundButton.
             public void onPageSelected(int position) {
                 String nameS = Uri.parse(soundsFiles.get(position)).getLastPathSegment();
                 if(mp != null){
-                    mp.stop();
+                    mp.release();
                 }
                 getMedia(nameS, folderB);
                 toggleButton.setOnCheckedChangeListener(SliderActivity.this);
@@ -118,6 +118,14 @@ public class SliderActivity extends AppCompatActivity implements CompoundButton.
             }
         });
 
+    }
+
+    @Override
+    public void onBackPressed(){
+        super.onBackPressed();
+        if(mp!=null && mp.isPlaying()){
+            mp.release();
+        }
     }
 
     public int GetBookId() {
