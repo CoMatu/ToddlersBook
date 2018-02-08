@@ -54,7 +54,7 @@ public class CustomSwipeAdapter extends PagerAdapter {
         LayoutInflater layoutInflatter = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         assert layoutInflatter != null;
         View item_view = layoutInflatter.inflate(R.layout.swipe_layout, container, false);
-        ImageView imageView = (ImageView) item_view.findViewById(R.id.image_view);
+        ImageView imageView = item_view.findViewById(R.id.image_view);
         File imgFile = new File(pagesFiles.get(position));
         if (imgFile.exists()) {
             Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());

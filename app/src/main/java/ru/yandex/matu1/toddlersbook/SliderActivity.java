@@ -44,7 +44,7 @@ public class SliderActivity extends AppCompatActivity implements CompoundButton.
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_slider);
-        imageButton = (ImageButton) findViewById(R.id.imageButtonHome);
+        imageButton = findViewById(R.id.imageButtonHome);
         View.OnClickListener clickHome = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -72,11 +72,11 @@ public class SliderActivity extends AppCompatActivity implements CompoundButton.
         ArrayList<String> pagesFiles = bookFiles.getPagesPath();
         final ArrayList<String> soundsFiles = bookFiles.getSoundsPath();
 
-        viewPager = (ViewPager) findViewById(R.id.view_pager);
+        viewPager = findViewById(R.id.view_pager);
         viewPager.setPageTransformer(true, new ZoomOutPageTransformer());
         adapter = new CustomSwipeAdapter(this, pagesFiles);
         viewPager.setAdapter(adapter);
-        toggleButton = (ToggleButton) findViewById(R.id.imageButtonPlay);
+        toggleButton = findViewById(R.id.imageButtonPlay);
 
         //слушаем номер слайда при перелистывании
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {

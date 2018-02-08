@@ -47,10 +47,10 @@ public class BookCardActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_card);
 
-        progressBar = (ProgressBar) findViewById(R.id.progressBar3);
+        progressBar = findViewById(R.id.progressBar3);
         progressBar.setVisibility(View.INVISIBLE);
 
-        ImageButton imageButton = (ImageButton) findViewById(R.id.imageButtonHome);
+        ImageButton imageButton = findViewById(R.id.imageButtonHome);
         View.OnClickListener clickHome = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -66,13 +66,13 @@ public class BookCardActivity extends AppCompatActivity {
         String covers = MyJSON.getData(this, fileNamePath);
         ArrayList<String> coversPaths = getFilesPathFromFile(covers);
 
-        ImageView imageView = (ImageView) findViewById(R.id.imageView);
+        ImageView imageView = findViewById(R.id.imageView);
         int posit = bookId - 1;
         File imgFile = new File(coversPaths.get(posit));
         Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
         imageView.setImageBitmap(myBitmap);
 
-        buttonDownload = (Button) findViewById(R.id.button);
+        buttonDownload = findViewById(R.id.button);
 
         /**
          * Проверим наличие файлов в папке bookfiles_1, bookfiles_2, ...
@@ -290,7 +290,6 @@ public class BookCardActivity extends AppCompatActivity {
             }
 
 
-
             return pagesFiles;
         }
 
@@ -303,7 +302,7 @@ public class BookCardActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(ArrayList<String> pagesFiles) {
-            progressBar.setVisibility(View.GONE);
+            progressBar.setVisibility(View.INVISIBLE);
             buttonDownload.setText(R.string.buttonRead);
             super.onPostExecute(pagesFiles);
         }
@@ -335,7 +334,7 @@ public class BookCardActivity extends AppCompatActivity {
         } catch (IOException e) {
             Log.d("Error....", e.toString());
         }
-        String filePathForWrite = rootDir+File.separator+fileName;
+        String filePathForWrite = rootDir + File.separator + fileName;
         return filePathForWrite;
 
     }

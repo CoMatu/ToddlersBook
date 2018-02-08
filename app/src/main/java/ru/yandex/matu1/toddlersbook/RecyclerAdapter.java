@@ -66,8 +66,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ImageV
 
         ImageViewHolder(View itemView) {
             super(itemView);
-            cardView = (CardView) itemView.findViewById(R.id.card_view);
-            imgObl = (ImageView) itemView.findViewById(R.id.iv_recycler_item);
+            cardView = itemView.findViewById(R.id.card_view);
+            imgObl = itemView.findViewById(R.id.iv_recycler_item);
         }
 
         public void bind(Uri uri) {

@@ -120,7 +120,7 @@ public class WelcomeActivity extends AppCompatActivity {
                     int d = i + 1;
                     String fileUrl = urlsFromServer.get(i);
                     String filenam = getApplicationContext().getFilesDir() + File.separator + "bookcover_" + d + ".jpg";
-                    FileLoader(fileUrl, filenam);
+                    fileLoader(fileUrl, filenam);
                 }
                 String strJs = new Gson().toJson(filesPath);
 
@@ -141,7 +141,7 @@ public class WelcomeActivity extends AppCompatActivity {
                     int d = i + 1;
                     String fileUrl = urlsFromServer.get(i);
                     String filenam = getApplicationContext().getFilesDir() + File.separator + "bookcover_" + d + ".jpg";
-                    FileLoader(fileUrl, filenam);
+                    fileLoader(fileUrl, filenam);
                 }
                 String strJs = new Gson().toJson(filesPath);
 
@@ -183,7 +183,7 @@ public class WelcomeActivity extends AppCompatActivity {
 
     }
 
-    private void FileLoader(String fileUrl, String filename) {
+    private void fileLoader(String fileUrl, String filename) {
 
         ThinDownloadManager downloadManager = new ThinDownloadManager(5); //количество потоков загрузки
         Uri downloadUri = Uri.parse(fileUrl);
@@ -217,7 +217,7 @@ public class WelcomeActivity extends AppCompatActivity {
                 startActivity(intent);
                 finish();
             }
-        }, 2000);
+        }, 1000);
     }
     @Override
     public  void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
