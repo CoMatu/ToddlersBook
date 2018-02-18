@@ -40,7 +40,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ImageV
     @Override
     public void onBindViewHolder(final ImageViewHolder holder, final int position) {
         Cover cover = covers.get(position);
-        Uri uri = cover.getFileBookCover();
+        String uri = cover.getFileBookCover();
         holder.bind(uri);
 
         holder.imgObl.setOnClickListener(new View.OnClickListener() {
@@ -70,7 +70,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ImageV
             imgObl = itemView.findViewById(R.id.iv_recycler_item);
         }
 
-        public void bind(Uri uri) {
+        public void bind(String uri) {
             Picasso
                     .with(itemView.getContext())
                     .load(uri)

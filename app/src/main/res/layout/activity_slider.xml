@@ -41,6 +41,8 @@
             android:layout_alignParentEnd="true"
             android:layout_alignTop="@+id/imageButtonHome"
             android:layout_weight="0.1"
+            android:layout_marginRight="5dp"
+
             android:background="@drawable/button_backgr"
             android:scaleType="fitCenter"
             android:textOff=" "

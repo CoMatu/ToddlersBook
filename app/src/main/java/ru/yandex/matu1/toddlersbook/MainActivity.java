@@ -1,16 +1,15 @@
 package ru.yandex.matu1.toddlersbook;
 
-import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONTokener;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +18,7 @@ import ru.yandex.matu1.toddlersbook.models.Cover;
 public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
-    String jsResult;
+    String fileNamePath = "filesPath.json";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,41 +31,36 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(llm);
         recyclerView.setHasFixedSize(true);
 
-        String fileNamePath = "filesPath.json";
-        jsResult = MyJSON.getData(getApplicationContext(), fileNamePath);
         initializeAdapter();
-
     }
 
-    private List<Cover> initData(ArrayList<Uri> urisImg) {
+    private List<Cover> initData(ArrayList<String> urisImg) {
         ArrayList<Cover> covers = new ArrayList<>();
-        for (int i=0; i<urisImg.size();i++){
+        for (int i = 0; i < urisImg.size(); i++) {
             covers.add(new Cover(urisImg.get(i)));
         }
         return covers;
     }
 
     private void initializeAdapter() {
-        RecyclerAdapter recyclerAdapter = new RecyclerAdapter(initData(getFilesPathFromFile(jsResult)));
+        RecyclerAdapter recyclerAdapter = new RecyclerAdapter(initData(getFilesPathFromFile()));
         recyclerView.setAdapter(recyclerAdapter);
     }
 
-    public ArrayList<Uri> getFilesPathFromFile (String jsResult){
-        ArrayList<Uri> urisImg = new ArrayList<>();
-
-        try{
-            JSONArray rootJson = new JSONArray(new JSONTokener(jsResult));
-            for(int i=0; i<rootJson.length(); i++){
-                JSONObject o = rootJson.getJSONObject(i);
-                String strTo = (String) o.get("uriString");
-                urisImg.add(Uri.parse(strTo));
-            }
-        }
-        catch (JSONException e) {
+    public ArrayList<String> getFilesPathFromFile() {
+        String uriString = null;
+        ArrayList<String> urlsCoverList = null;
+        try {
+            uriString = MyJSON.getData(getApplicationContext(), fileNamePath);
+            Gson gsonCovers = new Gson();
+            Type founderListType = new TypeToken<ArrayList<String>>() {
+            }.getType();
+            urlsCoverList = gsonCovers.fromJson(uriString, founderListType);
+        } catch (Exception e) {
             e.printStackTrace();
+            Log.e("TAG", "Error of intent: " + e.getLocalizedMessage());
         }
-
-        return urisImg;
+        return urlsCoverList;
     }
 
 }

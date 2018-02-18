@@ -1,11 +1,10 @@
 package ru.yandex.matu1.toddlersbook;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,13 +13,9 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -33,6 +28,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import it.sephiroth.android.library.picasso.Picasso;
 import ru.yandex.matu1.toddlersbook.models.Book;
 import ru.yandex.matu1.toddlersbook.models.BookFiles;
 
@@ -41,6 +37,8 @@ public class BookCardActivity extends AppCompatActivity {
     private int bookId;
     ProgressBar progressBar;
     Button buttonDownload;
+
+    //http://skazkimal.ru/todbook/book_1/pages/page1.jpg
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,20 +55,15 @@ public class BookCardActivity extends AppCompatActivity {
                 goHome();
             }
         };
-
         imageButton.setOnClickListener(clickHome);
 
         bookUriFromId();
-
-        String fileNamePath = "filesPath.json";
-        String covers = MyJSON.getData(this, fileNamePath);
-        ArrayList<String> coversPaths = getFilesPathFromFile(covers);
-
         ImageView imageView = findViewById(R.id.imageView);
-        int posit = bookId - 1;
-        File imgFile = new File(coversPaths.get(posit));
-        Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-        imageView.setImageBitmap(myBitmap);
+        String coverUrl = "http://skazkimal.ru/todbook/book_"+bookId+"/pages/page1.jpg";
+
+        Picasso.with(BookCardActivity.this)
+                .load(coverUrl)
+                .into(imageView);
 
         buttonDownload = findViewById(R.id.button);
 
@@ -96,7 +89,6 @@ public class BookCardActivity extends AppCompatActivity {
                 }
             });
             jsDownload.start(); // запустили поток 1*/
-
 
             /**
              * Обрабатываем нажатие кнопки "Загрузить" и грузим файлы книги
@@ -137,7 +129,6 @@ public class BookCardActivity extends AppCompatActivity {
                     nextActivity();
                 }
             });
-
         }
     }
 
@@ -159,21 +150,6 @@ public class BookCardActivity extends AppCompatActivity {
                 finish();
             }
         }, 20);
-    }
-
-    private ArrayList<String> getFilesPathFromFile(String jsResult) {
-        ArrayList<String> urisImg = new ArrayList<>();
-        try {
-            JSONArray rootJson = new JSONArray(new JSONTokener(jsResult));
-            for (int i = 0; i < rootJson.length(); i++) {
-                JSONObject o = rootJson.getJSONObject(i);
-                String strTo = (String) o.get("uriString");
-                urisImg.add(strTo);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return urisImg;
     }
 
     private void bookLoader() {
@@ -200,6 +176,11 @@ public class BookCardActivity extends AppCompatActivity {
             MyJSON.saveData(getApplicationContext(), resultJsonServer, fileBook);
         } catch (Exception e) {
             e.printStackTrace();
+
+            toastAnywhere(getString(R.string.NoInternet));
+
+            goHome();
+
         }
     }
 
@@ -237,15 +218,9 @@ public class BookCardActivity extends AppCompatActivity {
     }
 
     private void goHome() {
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
                 Intent intent = new Intent(BookCardActivity.this, MainActivity.class);
                 startActivity(intent);
                 finish();
-            }
-        }, 10);
     }
 
     private class BookFilesLoader extends AsyncTask<String, Integer, ArrayList<String>> {
@@ -337,5 +312,15 @@ public class BookCardActivity extends AppCompatActivity {
         String filePathForWrite = rootDir + File.separator + fileName;
         return filePathForWrite;
 
+    }
+
+    public void toastAnywhere(final String text) {
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable() {
+            public void run() {
+                Toast.makeText(getApplicationContext(), text,
+                        Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }

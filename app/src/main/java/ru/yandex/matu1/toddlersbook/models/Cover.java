@@ -1,19 +1,17 @@
 package ru.yandex.matu1.toddlersbook.models;
 
-import android.net.Uri;
-
 public class Cover {
-    Uri fileBookCover;
+    String fileBookCover;
 
-    public Cover(Uri fileBookCover) {
+    public Cover(String fileBookCover) {
         this.fileBookCover = fileBookCover;
     }
 
-    public Uri getFileBookCover() {
+    public String getFileBookCover() {
         return fileBookCover;
     }
 
-    public void setFileBookCover(Uri fileBookCover) {
+    public void setFileBookCover(String fileBookCover) {
         this.fileBookCover = fileBookCover;
     }
 }
