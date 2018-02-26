@@ -11,6 +11,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
@@ -32,6 +36,8 @@ public class WelcomeActivity extends AppCompatActivity {
     private final int MY_PERMISSIONS_REQUEST_CODE = 1;
     private String fileNamePath = "filesPath.json";
     private int connectToServer = 1;
+    private AdView adView;
+
 
     @Override
 
@@ -39,19 +45,8 @@ public class WelcomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
 
-/*        checkListFile(fileNamePath);
-        if (!checkFileStorage) {*/
             ActivityCompat.requestPermissions(this, new String[]{
                     Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_CODE);
- //       }
-/*
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                nextActivity();
-            }
-        }, 1500);
-*/
     }
 
     private class ParseJsonServer extends AsyncTask<Void, Void, String> {

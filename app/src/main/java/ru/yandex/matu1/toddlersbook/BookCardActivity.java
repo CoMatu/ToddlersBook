@@ -126,6 +126,7 @@ public class BookCardActivity extends AppCompatActivity {
             buttonDownload.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
                     nextActivity();
                 }
             });
@@ -284,7 +285,7 @@ public class BookCardActivity extends AppCompatActivity {
 
     }
 
-    private String downloadFile(String fileURL, String fileName) {
+    public String downloadFile(String fileURL, String fileName) {
         String folderB = "bookfiles_" + bookId; // имя папки для записи файла
         String rootDir = String.valueOf(getExternalFilesDir(folderB));
         try {
