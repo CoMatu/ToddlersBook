@@ -1,12 +1,13 @@
 package ru.yandex.matu1.toddlersbook;
 
+import android.app.DialogFragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -27,16 +28,18 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import it.sephiroth.android.library.picasso.Picasso;
 import ru.yandex.matu1.toddlersbook.models.Book;
 import ru.yandex.matu1.toddlersbook.models.BookFiles;
 
-public class BookCardActivity extends AppCompatActivity {
+public class BookCardActivity extends AppCompatActivity implements MyDialog.NoticeDialogListener {
     static final String TAG = "myLogs";
     private int bookId;
     ProgressBar progressBar;
     Button buttonDownload;
+    final BookFilesLoader bookFilesLoader = new BookFilesLoader();
 
     //http://skazkimal.ru/todbook/book_1/pages/page1.jpg
 
@@ -52,14 +55,19 @@ public class BookCardActivity extends AppCompatActivity {
         View.OnClickListener clickHome = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                goHome();
+                if (!Objects.equals(bookFilesLoader.getStatus().toString(), "RUNNING")) {
+                    goHome();
+                }
+                android.app.FragmentManager fm = getFragmentManager();
+                MyDialog myDialog = new MyDialog();
+                myDialog.show(fm, "MyDialog");
             }
         };
         imageButton.setOnClickListener(clickHome);
 
         bookUriFromId();
         ImageView imageView = findViewById(R.id.imageView);
-        String coverUrl = "http://skazkimal.ru/todbook/book_"+bookId+"/pages/page1.jpg";
+        String coverUrl = "http://skazkimal.ru/todbook/book_" + bookId + "/pages/page1.jpg";
 
         Picasso.with(BookCardActivity.this)
                 .load(coverUrl)
@@ -110,7 +118,6 @@ public class BookCardActivity extends AppCompatActivity {
                     String[] urlsSounds = sounds.toArray(new String[0]);
                     String[] urlsFiles = arrayAndArrayNewArray(urlsPages, urlsSounds);
 // Запускаем загрузку файлов AsyncTask
-                    BookFilesLoader bookFilesLoader = new BookFilesLoader();
                     bookFilesLoader.execute(urlsFiles);
 
                     buttonDownload.setOnClickListener(new View.OnClickListener() {
@@ -132,6 +139,8 @@ public class BookCardActivity extends AppCompatActivity {
             });
         }
     }
+
+
 
     private void bookUriFromId() {
         //получаем номер ID книги, с обложки которой перешли в слайдер
@@ -219,9 +228,15 @@ public class BookCardActivity extends AppCompatActivity {
     }
 
     private void goHome() {
-                Intent intent = new Intent(BookCardActivity.this, MainActivity.class);
-                startActivity(intent);
-                finish();
+        Intent intent = new Intent(BookCardActivity.this, MainActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+        bookFilesLoader.cancel(true);
+
     }
 
     private class BookFilesLoader extends AsyncTask<String, Integer, ArrayList<String>> {
@@ -230,7 +245,6 @@ public class BookCardActivity extends AppCompatActivity {
         protected void onPreExecute() {
             progressBar.setVisibility(View.VISIBLE);
             super.onPreExecute();
-
         }
 
         @Override
@@ -248,6 +262,9 @@ public class BookCardActivity extends AppCompatActivity {
                     pagesFiles.add(filePath);
                     publishProgress(count);
                     count++;
+                    if (isCancelled()){
+                        return null;
+                    }
                 }
 
                 BookFiles bookFiles = new BookFiles();
@@ -265,7 +282,6 @@ public class BookCardActivity extends AppCompatActivity {
                 Log.e("Error: ", e.getMessage());
             }
 
-
             return pagesFiles;
         }
 
@@ -281,6 +297,14 @@ public class BookCardActivity extends AppCompatActivity {
             progressBar.setVisibility(View.INVISIBLE);
             buttonDownload.setText(R.string.buttonRead);
             super.onPostExecute(pagesFiles);
+        }
+
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+            progressBar.setProgress(0);
+            // удалить загруженные файлы !!!
+            // удалить json со списком загруженных файлов !!!
         }
 
     }
