@@ -1,7 +1,6 @@
-package ru.yandex.matu1.toddlersbook;
+package ru.yandex.matu1.toddlersbook.adapters;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ViewHolder;
@@ -13,6 +12,8 @@ import android.widget.ImageView;
 import java.util.List;
 
 import it.sephiroth.android.library.picasso.Picasso;
+import ru.yandex.matu1.toddlersbook.BookCardActivity;
+import ru.yandex.matu1.toddlersbook.R;
 import ru.yandex.matu1.toddlersbook.models.Cover;
 
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ImageViewHolder> {

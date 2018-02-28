@@ -1,4 +1,4 @@
-package ru.yandex.matu1.toddlersbook;
+package ru.yandex.matu1.toddlersbook.adapters;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import it.sephiroth.android.library.picasso.Picasso;
+import ru.yandex.matu1.toddlersbook.R;
 import ru.yandex.matu1.toddlersbook.models.BookFiles;
 import ru.yandex.matu1.toddlersbook.models.Cover;
 

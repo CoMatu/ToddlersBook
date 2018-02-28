@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.Objects;
 
 import it.sephiroth.android.library.picasso.Picasso;
+import ru.yandex.matu1.toddlersbook.app_classes.MyDialog;
+import ru.yandex.matu1.toddlersbook.app_classes.MyJSON;
 import ru.yandex.matu1.toddlersbook.models.Book;
 import ru.yandex.matu1.toddlersbook.models.BookFiles;
 

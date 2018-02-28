@@ -13,6 +13,8 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import ru.yandex.matu1.toddlersbook.adapters.RecyclerAdapter;
+import ru.yandex.matu1.toddlersbook.app_classes.MyJSON;
 import ru.yandex.matu1.toddlersbook.models.Cover;
 
 public class MainActivity extends AppCompatActivity {

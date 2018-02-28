@@ -11,10 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Toast;
 
-import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.InterstitialAd;
-import com.google.android.gms.ads.MobileAds;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
@@ -28,6 +25,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+
+import ru.yandex.matu1.toddlersbook.app_classes.MyJSON;
 
 public class WelcomeActivity extends AppCompatActivity {
 

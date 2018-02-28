@@ -1,6 +1,5 @@
 package ru.yandex.matu1.toddlersbook;
 
-import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -9,7 +8,6 @@ import android.os.Handler;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -23,10 +21,13 @@ import com.google.gson.Gson;
 import java.io.File;
 import java.util.ArrayList;
 
+import ru.yandex.matu1.toddlersbook.adapters.CustomSwipeAdapter;
 import ru.yandex.matu1.toddlersbook.animations.ZoomOutPageTransformer;
+import ru.yandex.matu1.toddlersbook.app_classes.MyJSON;
+import ru.yandex.matu1.toddlersbook.app_classes.MyPlayer;
 import ru.yandex.matu1.toddlersbook.models.BookFiles;
 
-import static ru.yandex.matu1.toddlersbook.MyPlayer.mp;
+import static ru.yandex.matu1.toddlersbook.app_classes.MyPlayer.mp;
 
 public class SliderActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener {
     static final String TAG = "myLogs";
