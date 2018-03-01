@@ -303,8 +303,18 @@ public class BookCardActivity extends AppCompatActivity implements MyDialog.Noti
 
         @Override
         protected void onCancelled() {
+            String folderName = "bookfiles_" + bookId;
+            File folderFile = new File(String.valueOf(getExternalFilesDir(folderName)));
             super.onCancelled();
             progressBar.setProgress(0);
+            deleteRecursive(folderFile);
+
+            File fileJson = new File(String.valueOf(getFilesDir().getPath() + File.separator + "book_" + bookId + ".json"));
+            if (fileJson.exists()){
+                fileJson.delete();
+            }
+
+
             // удалить загруженные файлы !!!
             // удалить json со списком загруженных файлов !!!
         }
@@ -349,5 +359,12 @@ public class BookCardActivity extends AppCompatActivity implements MyDialog.Noti
                         Toast.LENGTH_LONG).show();
             }
         });
+    }
+    void deleteRecursive(File fileOrDirectory) {
+        if (fileOrDirectory.isDirectory())
+            for (File child : fileOrDirectory.listFiles())
+                deleteRecursive(child);
+
+        fileOrDirectory.delete();
     }
 }

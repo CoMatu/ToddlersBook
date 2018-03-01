@@ -22,7 +22,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ImageV
 
     private List<Cover> covers;
 
-    RecyclerAdapter(List<Cover> covers) {
+    public RecyclerAdapter(List<Cover> covers) {
         this.covers = covers;
     }
 
