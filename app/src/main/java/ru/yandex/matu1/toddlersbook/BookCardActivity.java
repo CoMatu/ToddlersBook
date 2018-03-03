@@ -54,15 +54,16 @@ public class BookCardActivity extends AppCompatActivity implements MyDialog.Noti
         progressBar.setVisibility(View.INVISIBLE);
 
         ImageButton imageButton = findViewById(R.id.imageButtonHome);
+
         View.OnClickListener clickHome = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (!Objects.equals(bookFilesLoader.getStatus().toString(), "RUNNING")) {
                     goHome();
-                }
+                } else {
                 android.app.FragmentManager fm = getFragmentManager();
                 MyDialog myDialog = new MyDialog();
-                myDialog.show(fm, "MyDialog");
+                myDialog.show(fm, "MyDialog");}
             }
         };
         imageButton.setOnClickListener(clickHome);
@@ -77,13 +78,7 @@ public class BookCardActivity extends AppCompatActivity implements MyDialog.Noti
 
         buttonDownload = findViewById(R.id.button);
 
-        /**
-         * Проверим наличие файлов в папке bookfiles_1, bookfiles_2, ...
-         */
         String folderBook = "bookfiles_" + bookId;
-        /**
-         * Проверяем необходимость загрузки файлов
-         */
 
         File rootFile1 = new File(String.valueOf(getExternalFilesDir(folderBook)));
         File[] filesArray = rootFile1.listFiles();
@@ -118,9 +113,10 @@ public class BookCardActivity extends AppCompatActivity implements MyDialog.Noti
                     List<String> sounds = book.getSoundUrl();
                     String[] urlsPages = pages.toArray(new String[0]);
                     String[] urlsSounds = sounds.toArray(new String[0]);
-                    String[] urlsFiles = arrayAndArrayNewArray(urlsPages, urlsSounds);
+                    final String[] urlsFiles = arrayAndArrayNewArray(urlsPages, urlsSounds);
 // Запускаем загрузку файлов AsyncTask
                     bookFilesLoader.execute(urlsFiles);
+
 
                     buttonDownload.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -128,6 +124,7 @@ public class BookCardActivity extends AppCompatActivity implements MyDialog.Noti
                             nextActivity();
                         }
                     });
+
                 }
             });
         } else {
@@ -141,8 +138,6 @@ public class BookCardActivity extends AppCompatActivity implements MyDialog.Noti
             });
         }
     }
-
-
 
     private void bookUriFromId() {
         //получаем номер ID книги, с обложки которой перешли в слайдер
@@ -238,7 +233,7 @@ public class BookCardActivity extends AppCompatActivity implements MyDialog.Noti
     @Override
     public void onDialogPositiveClick(DialogFragment dialog) {
         bookFilesLoader.cancel(true);
-
+        goHome();
     }
 
     private class BookFilesLoader extends AsyncTask<String, Integer, ArrayList<String>> {
@@ -246,6 +241,7 @@ public class BookCardActivity extends AppCompatActivity implements MyDialog.Noti
         @Override
         protected void onPreExecute() {
             progressBar.setVisibility(View.VISIBLE);
+            buttonDownload.setEnabled(false);
             super.onPreExecute();
         }
 
@@ -298,6 +294,7 @@ public class BookCardActivity extends AppCompatActivity implements MyDialog.Noti
         protected void onPostExecute(ArrayList<String> pagesFiles) {
             progressBar.setVisibility(View.INVISIBLE);
             buttonDownload.setText(R.string.buttonRead);
+            buttonDownload.setEnabled(true);
             super.onPostExecute(pagesFiles);
         }
 
@@ -309,10 +306,10 @@ public class BookCardActivity extends AppCompatActivity implements MyDialog.Noti
             progressBar.setProgress(0);
             deleteRecursive(folderFile);
 
-            File fileJson = new File(String.valueOf(getFilesDir().getPath() + File.separator + "book_" + bookId + ".json"));
+/*            File fileJson = new File(String.valueOf(getFilesDir().getPath() + File.separator + "book_" + bookId + ".json"));
             if (fileJson.exists()){
                 fileJson.delete();
-            }
+            }*/
 
 
             // удалить загруженные файлы !!!
@@ -360,11 +357,24 @@ public class BookCardActivity extends AppCompatActivity implements MyDialog.Noti
             }
         });
     }
+
     void deleteRecursive(File fileOrDirectory) {
         if (fileOrDirectory.isDirectory())
             for (File child : fileOrDirectory.listFiles())
                 deleteRecursive(child);
 
         fileOrDirectory.delete();
+    }
+
+    @Override
+    public void onBackPressed(){
+        if (!Objects.equals(bookFilesLoader.getStatus().toString(), "RUNNING")) {
+//            goHome();
+            super.onBackPressed();
+        }
+        else {
+        android.app.FragmentManager fmBackButton = getFragmentManager();
+        MyDialog myDialogBackButton = new MyDialog();
+        myDialogBackButton.show(fmBackButton, "MyDialog");}
     }
 }
