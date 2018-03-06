@@ -7,7 +7,6 @@ import java.util.List;
 
 public class Book {
     @SerializedName("bookID")
-
     @Expose
     private Integer bookID;
     @SerializedName("pageUrl")
@@ -16,6 +15,9 @@ public class Book {
     @SerializedName("soundUrl")
     @Expose
     private List<String> soundUrl = null;
+    @SerializedName("price")
+    @Expose
+    private Integer price;
 
     public Integer getBookID() {
         return bookID;
@@ -39,6 +41,14 @@ public class Book {
 
     public void setSoundUrl(List<String> soundUrl) {
         this.soundUrl = soundUrl;
+    }
+
+    public Integer getPrice() {
+        return price;
+    }
+
+    public void setPrice(Integer price) {
+        this.price = price;
     }
 
 }

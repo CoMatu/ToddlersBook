@@ -7,6 +7,8 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -16,6 +18,8 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.anjlab.android.iab.v3.BillingProcessor;
+import com.anjlab.android.iab.v3.TransactionDetails;
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
@@ -36,12 +40,13 @@ import ru.yandex.matu1.toddlersbook.app_classes.MyJSON;
 import ru.yandex.matu1.toddlersbook.models.Book;
 import ru.yandex.matu1.toddlersbook.models.BookFiles;
 
-public class BookCardActivity extends AppCompatActivity implements MyDialog.NoticeDialogListener {
+public class BookCardActivity extends AppCompatActivity implements MyDialog.NoticeDialogListener, BillingProcessor.IBillingHandler {
     static final String TAG = "myLogs";
     private int bookId;
     ProgressBar progressBar;
     Button buttonDownload;
     final BookFilesLoader bookFilesLoader = new BookFilesLoader();
+    BillingProcessor bp;
 
     //http://skazkimal.ru/todbook/book_1/pages/page1.jpg
 
@@ -49,6 +54,8 @@ public class BookCardActivity extends AppCompatActivity implements MyDialog.Noti
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_card);
+
+        bp = new BillingProcessor(this, null, this);
 
         progressBar = findViewById(R.id.progressBar3);
         progressBar.setVisibility(View.INVISIBLE);
@@ -236,6 +243,33 @@ public class BookCardActivity extends AppCompatActivity implements MyDialog.Noti
         goHome();
     }
 
+    @Override
+    public void onProductPurchased(@NonNull String productId, @Nullable TransactionDetails details) {
+
+    }
+
+    @Override
+    public void onPurchaseHistoryRestored() {
+
+    }
+
+    @Override
+    public void onBillingError(int errorCode, @Nullable Throwable error) {
+
+    }
+
+    @Override
+    public void onBillingInitialized() {
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (!bp.handleActivityResult(requestCode, resultCode, data)) {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
     private class BookFilesLoader extends AsyncTask<String, Integer, ArrayList<String>> {
 
         @Override
@@ -376,5 +410,13 @@ public class BookCardActivity extends AppCompatActivity implements MyDialog.Noti
         android.app.FragmentManager fmBackButton = getFragmentManager();
         MyDialog myDialogBackButton = new MyDialog();
         myDialogBackButton.show(fmBackButton, "MyDialog");}
+    }
+
+    @Override
+    public void onDestroy() {
+        if (bp != null) {
+            bp.release();
+        }
+        super.onDestroy();
     }
 }

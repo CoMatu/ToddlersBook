@@ -11,7 +11,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Toast;
 
-import com.google.android.gms.ads.AdView;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
@@ -35,8 +34,6 @@ public class WelcomeActivity extends AppCompatActivity {
     private final int MY_PERMISSIONS_REQUEST_CODE = 1;
     private String fileNamePath = "filesPath.json";
     private int connectToServer = 1;
-    private AdView adView;
-
 
     @Override
 
