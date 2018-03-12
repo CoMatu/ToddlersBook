@@ -14,6 +14,30 @@
         app:srcCompat="@drawable/wood"
         tools:ignore="ContentDescription" />
 
+    <ImageView
+        android:id="@+id/imageView7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:visibility="invisible"
+        app:srcCompat="@drawable/price_tag" />
+
+    <TextView
+        android:id="@+id/textPrice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_marginBottom="5sp"
+        android:layout_marginRight="10sp"
+        android:padding="10dp"
+        android:text="39,00"
+        android:textAlignment="center"
+        android:textAllCaps="true"
+        android:textColor="@android:color/background_light"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:visibility="invisible" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

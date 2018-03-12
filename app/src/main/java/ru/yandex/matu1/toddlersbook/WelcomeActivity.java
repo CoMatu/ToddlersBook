@@ -130,20 +130,6 @@ public class WelcomeActivity extends AppCompatActivity {
         return urlsFromServer;
     }
 
-    private void checkListFile(String fileNameStorage) {
-        File fileUrls = new File(getApplicationContext().getFilesDir().getPath() + "/" + fileNameStorage);
-
-        if (fileUrls.exists()) {
-            checkFileStorage = true;
-        }
-    }
-
-    private void nextActivity() {
-        Intent intent = new Intent(WelcomeActivity.this, MainActivity.class);
-        startActivity(intent);
-        finish();
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         switch (requestCode) {
@@ -168,6 +154,20 @@ public class WelcomeActivity extends AppCompatActivity {
 
                 }
             }
+        }
+    }
+
+    private void nextActivity() {
+        Intent intent = new Intent(WelcomeActivity.this, MainActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private void checkListFile(String fileNameStorage) {
+        File fileUrls = new File(getApplicationContext().getFilesDir().getPath() + "/" + fileNameStorage);
+
+        if (fileUrls.exists()) {
+            checkFileStorage = true;
         }
     }
 

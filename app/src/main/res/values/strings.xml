@@ -2,9 +2,11 @@
     <string name="app_name">Сказки малышки</string>
     <string name="buttonRead">Читать</string>
     <string name="buttonDownload">Загрузить</string>
+    <string name="buttonPurchase">Купить!</string>
     <string name="percent_progress">%1$d%%</string>
     <string name="NoInternetText">Для первого запуска программы необходим интернет! Выйдите из приложения и попробуйте снова!</string>
     <string name="NoInternet">Для загрузки файлов книги необходим интернет!</string>
+    <string name="NoBilling">Что-то пошло не так при совершении покупки...</string>
     <string name="download_text">Загрузить</string>
     <string name="todo">TODO</string>
     <string name="_111">111</string>

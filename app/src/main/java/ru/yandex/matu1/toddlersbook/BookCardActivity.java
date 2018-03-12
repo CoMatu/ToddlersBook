@@ -16,9 +16,11 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.anjlab.android.iab.v3.BillingProcessor;
+import com.anjlab.android.iab.v3.SkuDetails;
 import com.anjlab.android.iab.v3.TransactionDetails;
 import com.google.gson.Gson;
 
@@ -47,6 +49,8 @@ public class BookCardActivity extends AppCompatActivity implements MyDialog.Noti
     Button buttonDownload;
     final BookFilesLoader bookFilesLoader = new BookFilesLoader();
     BillingProcessor bp;
+    ImageView imagePrice;
+    TextView textPrice;
 
     //http://skazkimal.ru/todbook/book_1/pages/page1.jpg
 
@@ -54,8 +58,9 @@ public class BookCardActivity extends AppCompatActivity implements MyDialog.Noti
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_card);
+        getBookId();
 
-        bp = new BillingProcessor(this, null, this);
+        bp = new BillingProcessor(this, "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjFKHtpYbYUPzbnoT4oBxoJdhz8qVeGEvf5wIfSLTTyTHTXKw6XrUqABxuHlUhFaBtMZrlLNP4ygVaTtUc52kswrtANDWbFSHwNGEgcXFZ2olnpQSRNOdeXhx8NzkplbJuDO/1/OFr+onelaxyAsGyBfuBQVL3iYZG57yHYaKm/8nPEnGHSC/n/e/IqPjWNAczkzdBiodixaSuRTewkBLOw3Ddy5y117X2E+5rJJeQBK2XptMgIf2t96X6Kd5IJHwy2xjpPcG8JVBYcxvFO2NQqklouQDOBHUTOEgBRMzFjpO5ur6eNhLhRfMtZGr5rhRtromwJJ50mXLJFkCqJIaEwIDAQAB", this);
 
         progressBar = findViewById(R.id.progressBar3);
         progressBar.setVisibility(View.INVISIBLE);
@@ -75,8 +80,8 @@ public class BookCardActivity extends AppCompatActivity implements MyDialog.Noti
         };
         imageButton.setOnClickListener(clickHome);
 
-        bookUriFromId();
         ImageView imageView = findViewById(R.id.imageView);
+
         String coverUrl = "http://skazkimal.ru/todbook/book_" + bookId + "/pages/page1.jpg";
 
         Picasso.with(BookCardActivity.this)
@@ -92,61 +97,41 @@ public class BookCardActivity extends AppCompatActivity implements MyDialog.Noti
         int numbFiles = filesArray.length;
         if (numbFiles == 0) {
 
-            buttonDownload.setText(R.string.buttonDownload);
+            if(bookId == 3){
+                buttonDownload.setText(R.string.buttonPurchase);
+                buttonDownload.setOnClickListener(purchaseButtonListener);
 
-            Thread jsDownload = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    bookLoader();
-                }
-            });
-            jsDownload.start(); // запустили поток 1*/
+                imagePrice = findViewById(R.id.imagePrice);
+                imagePrice.setVisibility(View.VISIBLE);
+
+                textPrice = findViewById(R.id.textPrice);
+                textPrice.setVisibility(View.VISIBLE);
+            } else {
+
+                buttonDownload.setText(R.string.buttonDownload);
+
+                Thread jsDownload = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        bookLoader();
+                    }
+                });
+                jsDownload.start(); // запустили поток 1*/
+
 
             /**
              * Обрабатываем нажатие кнопки "Загрузить" и грузим файлы книги
              */
 
-            buttonDownload.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-// Составляем список url для загрузки файлов. Читаем их из ранее записанного json
-                    String fileListB = "list_" + "book_" + bookId + ".json";
-                    String jsReadFile = MyJSON.getData(getApplicationContext(), fileListB);
-//                    Log.d(TAG, jsReadFile);
-                    Gson gson = new Gson();
-                    Book book = gson.fromJson(jsReadFile, Book.class);
-                    List<String> pages = book.getPageUrl();
-                    List<String> sounds = book.getSoundUrl();
-                    String[] urlsPages = pages.toArray(new String[0]);
-                    String[] urlsSounds = sounds.toArray(new String[0]);
-                    final String[] urlsFiles = arrayAndArrayNewArray(urlsPages, urlsSounds);
-// Запускаем загрузку файлов AsyncTask
-                    bookFilesLoader.execute(urlsFiles);
-
-
-                    buttonDownload.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            nextActivity();
-                        }
-                    });
-
-                }
-            });
-        } else {
+            buttonDownload.setOnClickListener(downloadButtonListener);
+        }
+        }else{
             buttonDownload.setText(R.string.buttonRead);
-            buttonDownload.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    nextActivity();
-                }
-            });
+            buttonDownload.setOnClickListener(readButtonListener);
         }
     }
 
-    private void bookUriFromId() {
+    private void getBookId() {
         //получаем номер ID книги, с обложки которой перешли в слайдер
         Intent intent = getIntent();
         bookId = intent.getIntExtra("bookId", 1);
@@ -232,9 +217,7 @@ public class BookCardActivity extends AppCompatActivity implements MyDialog.Noti
     }
 
     private void goHome() {
-        Intent intent = new Intent(BookCardActivity.this, MainActivity.class);
-        startActivity(intent);
-        finish();
+        onBackPressed();
     }
 
     @Override
@@ -245,6 +228,10 @@ public class BookCardActivity extends AppCompatActivity implements MyDialog.Noti
 
     @Override
     public void onProductPurchased(@NonNull String productId, @Nullable TransactionDetails details) {
+        imagePrice.setVisibility(View.INVISIBLE);
+        textPrice.setVisibility(View.INVISIBLE);
+        buttonDownload.setText(R.string.buttonRead);
+        buttonDownload.setOnClickListener(readButtonListener);
 
     }
 
@@ -255,7 +242,8 @@ public class BookCardActivity extends AppCompatActivity implements MyDialog.Noti
 
     @Override
     public void onBillingError(int errorCode, @Nullable Throwable error) {
-
+        toastAnywhere("Что то пошло не так...");
+        onBackPressed();
     }
 
     @Override
@@ -329,6 +317,7 @@ public class BookCardActivity extends AppCompatActivity implements MyDialog.Noti
             progressBar.setVisibility(View.INVISIBLE);
             buttonDownload.setText(R.string.buttonRead);
             buttonDownload.setEnabled(true);
+            buttonDownload.setOnClickListener(readButtonListener);
             super.onPostExecute(pagesFiles);
         }
 
@@ -339,15 +328,6 @@ public class BookCardActivity extends AppCompatActivity implements MyDialog.Noti
             super.onCancelled();
             progressBar.setProgress(0);
             deleteRecursive(folderFile);
-
-/*            File fileJson = new File(String.valueOf(getFilesDir().getPath() + File.separator + "book_" + bookId + ".json"));
-            if (fileJson.exists()){
-                fileJson.delete();
-            }*/
-
-
-            // удалить загруженные файлы !!!
-            // удалить json со списком загруженных файлов !!!
         }
 
     }
@@ -419,4 +399,42 @@ public class BookCardActivity extends AppCompatActivity implements MyDialog.Noti
         }
         super.onDestroy();
     }
+
+    View.OnClickListener purchaseButtonListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            try {
+//                SkuDetails skuDetails = bp.getPurchaseListingDetails("ru.skazkimal.test_content");
+                bp.purchase(BookCardActivity.this, "3");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    };
+
+    View.OnClickListener downloadButtonListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+// Составляем список url для загрузки файлов. Читаем их из ранее записанного json
+            String fileListB = "list_" + "book_" + bookId + ".json";
+            String jsReadFile = MyJSON.getData(getApplicationContext(), fileListB);
+//                    Log.d(TAG, jsReadFile);
+            Gson gson = new Gson();
+            Book book = gson.fromJson(jsReadFile, Book.class);
+            List<String> pages = book.getPageUrl();
+            List<String> sounds = book.getSoundUrl();
+            String[] urlsPages = pages.toArray(new String[0]);
+            String[] urlsSounds = sounds.toArray(new String[0]);
+            final String[] urlsFiles = arrayAndArrayNewArray(urlsPages, urlsSounds);
+// Запускаем загрузку файлов AsyncTask
+            bookFilesLoader.execute(urlsFiles);
+        }
+    };
+
+    View.OnClickListener readButtonListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            nextActivity();
+        }
+    };
 }
