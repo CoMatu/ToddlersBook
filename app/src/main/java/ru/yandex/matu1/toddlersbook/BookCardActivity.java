@@ -51,6 +51,7 @@ public class BookCardActivity extends AppCompatActivity implements MyDialog.Noti
     BillingProcessor bp;
     ImageView imagePrice;
     TextView textPrice;
+    private boolean readyToPurchase = false;
 
     //http://skazkimal.ru/todbook/book_1/pages/page1.jpg
 
@@ -71,7 +72,7 @@ public class BookCardActivity extends AppCompatActivity implements MyDialog.Noti
             @Override
             public void onClick(View v) {
                 if (!Objects.equals(bookFilesLoader.getStatus().toString(), "RUNNING")) {
-                    goHome();
+                    onBackPressed();
                 } else {
                 android.app.FragmentManager fm = getFragmentManager();
                 MyDialog myDialog = new MyDialog();
@@ -178,7 +179,7 @@ public class BookCardActivity extends AppCompatActivity implements MyDialog.Noti
 
             toastAnywhere(getString(R.string.NoInternet));
 
-            goHome();
+            onBackPressed();
 
         }
     }
@@ -216,23 +217,27 @@ public class BookCardActivity extends AppCompatActivity implements MyDialog.Noti
         return res;
     }
 
-    private void goHome() {
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+        bookFilesLoader.cancel(true);
         onBackPressed();
     }
 
     @Override
-    public void onDialogPositiveClick(DialogFragment dialog) {
-        bookFilesLoader.cancel(true);
-        goHome();
-    }
-
-    @Override
     public void onProductPurchased(@NonNull String productId, @Nullable TransactionDetails details) {
+//        toastAnywhere("Покупка совершена - ваши деньги ТЮ ТЮ");
+        buttonDownload.setOnClickListener(downloadButtonListener);
         imagePrice.setVisibility(View.INVISIBLE);
         textPrice.setVisibility(View.INVISIBLE);
         buttonDownload.setText(R.string.buttonDownload);
-        buttonDownload.setOnClickListener(downloadButtonListener);
 
+        Thread jsDownload = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                bookLoader();
+            }
+        });
+        jsDownload.start(); // запустили поток 1*/
     }
 
     @Override
@@ -242,13 +247,16 @@ public class BookCardActivity extends AppCompatActivity implements MyDialog.Noti
 
     @Override
     public void onBillingError(int errorCode, @Nullable Throwable error) {
+
         toastAnywhere("Что то пошло не так...");
         onBackPressed();
+
     }
 
     @Override
     public void onBillingInitialized() {
-
+//        toastAnywhere("готов к покупкам");
+        readyToPurchase = true;
     }
 
     @Override
@@ -403,11 +411,11 @@ public class BookCardActivity extends AppCompatActivity implements MyDialog.Noti
     View.OnClickListener purchaseButtonListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            try {
-//                SkuDetails skuDetails = bp.getPurchaseListingDetails("ru.skazkimal.test_content");
+            if(readyToPurchase) {
                 bp.purchase(BookCardActivity.this, "3");
-            } catch (Exception e) {
-                e.printStackTrace();
+            } else {
+                toastAnywhere("Billing not initialized");
+                onBackPressed();
             }
         }
     };
