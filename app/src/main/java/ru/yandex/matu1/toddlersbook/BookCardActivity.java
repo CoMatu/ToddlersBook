@@ -230,8 +230,8 @@ public class BookCardActivity extends AppCompatActivity implements MyDialog.Noti
     public void onProductPurchased(@NonNull String productId, @Nullable TransactionDetails details) {
         imagePrice.setVisibility(View.INVISIBLE);
         textPrice.setVisibility(View.INVISIBLE);
-        buttonDownload.setText(R.string.buttonRead);
-        buttonDownload.setOnClickListener(readButtonListener);
+        buttonDownload.setText(R.string.buttonDownload);
+        buttonDownload.setOnClickListener(downloadButtonListener);
 
     }
 
