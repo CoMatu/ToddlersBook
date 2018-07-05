@@ -12,6 +12,8 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.yandex.metrica.YandexMetrica;
+import com.yandex.metrica.YandexMetricaConfig;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -43,6 +45,13 @@ public class WelcomeActivity extends AppCompatActivity {
 
             ActivityCompat.requestPermissions(this, new String[]{
                     Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_CODE);
+
+        // Инициализация AppMetrica SDK
+        String API_key = "bde07b78-22a4-4579-8dec-bab86dee0023";
+        YandexMetricaConfig.Builder configBuilder = YandexMetricaConfig.newConfigBuilder(API_key);
+        YandexMetrica.activate(getApplicationContext(), configBuilder.build());
+        // Отслеживание активности пользователей
+        YandexMetrica.enableActivityAutoTracking(getApplication());
     }
 
     private class ParseJsonServer extends AsyncTask<Void, Void, String> {
